@@ -1,0 +1,53 @@
+version: "3.9"
+
+
+services:
+  database:
+    image: postgres:15
+    volumes:
+      - /var/lib/postgresql/data/
+    secrets:
+      - postgres-user
+      - postgres-password
+    environment:
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER_FILE: /run/secrets/postgres-user
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+
+  backend:
+    build:
+      context: .
+    ports:
+      - "$SERVER_PORT:$SERVER_PORT"
+    secrets:
+      - spring.datasource.url
+      - source: postgres-user
+        target: spring.datasource.username
+      - source: postgres-password
+        target: spring.datasource.password
+    environment:
+      SERVER_PORT: $SERVER_PORT
+    depends_on:
+      - database
+
+  tests: 
+    image: mrexpen/planet_olymp_phase1
+    pull_policy: always
+    ports:
+      - "8090:8080"
+    environment:
+      SERVER_URL: http://backend:$SERVER_PORT
+      STAGE: all
+      # all - запуск всех тестов из трёх доступных этапов
+      # 0, 1 или 2 - запуск тестов для соответствующего этапа
+    depends_on:
+      - backend
+
+
+secrets:
+  postgres-user:
+    environment: POSTGRES_USER
+  postgres-password:
+    environment: POSTGRES_PASSWORD
+  spring.datasource.url:
+    environment: SPRING_DATASOURCE_URL
