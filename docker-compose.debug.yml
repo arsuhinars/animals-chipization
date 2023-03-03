@@ -3,6 +3,11 @@ services:
   database:
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_USER_FILE: ""
+      POSTGRES_PASSWORD_FILE: ""
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: qwerty12
 
   tests:
     environment:

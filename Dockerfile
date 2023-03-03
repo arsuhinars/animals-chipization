@@ -9,7 +9,7 @@ COPY .mvn .mvn
 RUN ./mvnw dependency:go-offline
 
 COPY ./src ./src
-COPY docker.application.properties ./src/main/java/resources/application.properties
+COPY docker.application.properties ./src/main/resources/application.properties
 RUN ./mvnw clean install
 
 
