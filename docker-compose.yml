@@ -20,12 +20,12 @@ services:
     ports:
       - "$SERVER_PORT:$SERVER_PORT"
     secrets:
-      - spring.datasource.url
       - source: postgres-user
         target: spring.datasource.username
       - source: postgres-password
         target: spring.datasource.password
     environment:
+      SPRING_DATASOURCE_URL: $SPRING_DATASOURCE_URL
       SERVER_PORT: $SERVER_PORT
     depends_on:
       - database
@@ -49,5 +49,3 @@ secrets:
     environment: POSTGRES_USER
   postgres-password:
     environment: POSTGRES_PASSWORD
-  spring.datasource.url:
-    environment: SPRING_DATASOURCE_URL
