@@ -9,12 +9,13 @@ COPY .mvn .mvn
 RUN ./mvnw dependency:go-offline
 
 COPY ./src ./src
-COPY docker.application.properties ./src/main/resources/application.properties
 RUN ./mvnw clean install
 
 
 # Run stage
 FROM eclipse-temurin:17-jre-alpine
+
+ENV SPRING_PROFILES_ACTIVE=docker
 
 WORKDIR /backend
 
