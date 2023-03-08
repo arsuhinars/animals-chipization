@@ -4,14 +4,14 @@ import org.springframework.http.HttpStatus;
 
 public class BoundException extends AppException {
     public BoundException() {
-        super("Entity is bounded", HttpStatus.BAD_REQUEST.value());
+        super("Entity is bounded", HttpStatus.BAD_REQUEST);
     }
 
     public BoundException(String details) {
-        super(details, HttpStatus.BAD_REQUEST.value());
+        super(details, HttpStatus.BAD_REQUEST);
     }
 
-    public BoundException(String details, Integer statusCode) {
+    public BoundException(String details, HttpStatus statusCode) {
         super(details, statusCode);
     }
 }

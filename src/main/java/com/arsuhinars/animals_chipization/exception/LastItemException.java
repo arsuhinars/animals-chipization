@@ -4,14 +4,14 @@ import org.springframework.http.HttpStatus;
 
 public class LastItemException extends AppException {
     public LastItemException() {
-        super("Entity is last item in the list", HttpStatus.BAD_REQUEST.value());
+        super("Entity is last item in the list", HttpStatus.BAD_REQUEST);
     }
 
     public LastItemException(String details) {
-        super(details, HttpStatus.BAD_REQUEST.value());
+        super(details, HttpStatus.BAD_REQUEST);
     }
 
-    public LastItemException(String details, Integer statusCode) {
+    public LastItemException(String details, HttpStatus statusCode) {
         super(details, statusCode);
     }
 }

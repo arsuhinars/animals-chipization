@@ -1,20 +1,18 @@
 package com.arsuhinars.animals_chipization.exception;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.http.HttpStatus;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class AppException extends Exception {
+@Setter
+@Getter
+public class AppException extends RuntimeException {
     @Setter(AccessLevel.PRIVATE)
     private String details;
 
     @Setter(AccessLevel.PRIVATE)
-    private Integer statusCode;
+    private HttpStatus statusCode;
 
-    public AppException(String details, Integer statusCode) {
+    public AppException(String details, HttpStatus statusCode) {
         super(details);
 
         setDetails(details);
