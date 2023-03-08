@@ -8,9 +8,12 @@ import com.arsuhinars.animals_chipization.repository.AccountRepository;
 import com.arsuhinars.animals_chipization.schema.account.AccountCreateSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountUpdateSchema;
+import com.arsuhinars.animals_chipization.util.OffsetPageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -45,6 +48,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountSchema getByEmail(String email) {
         return repository.findByEmail(email).map(AccountSchema::createFromModel).orElse(null);
+    }
+
+    @Override
+    public List<AccountSchema> search(String firstName, String lastName, String email, int from, int count) {
+        return repository.search(firstName, lastName, email, new OffsetPageable(count, from))
+            .stream()
+            .map(AccountSchema::createFromModel)
+            .toList();
     }
 
     @Override
