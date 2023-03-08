@@ -7,7 +7,11 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name = "animals")
+@Table(name = "animals", indexes = {
+    @Index(columnList = "chippingDateTime"),
+    @Index(columnList = "lifeStatus"),
+    @Index(columnList = "gender")
+})
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Getter
@@ -23,7 +27,7 @@ public class Animal {
     @JoinTable(
         name = "types",
         joinColumns = @JoinColumn(name = "animal_id"),
-        inverseJoinColumns = @JoinColumn(name = "animal_type_id")
+        inverseJoinColumns = @JoinColumn(name = "type_id")
     )
     private Set<AnimalType> types;
 
