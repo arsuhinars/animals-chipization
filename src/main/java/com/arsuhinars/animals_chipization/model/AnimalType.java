@@ -6,7 +6,9 @@ import lombok.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "animals_types")
+@Table(name = "animals_types", indexes = {
+    @Index(columnList = "type", unique = true)
+})
 @Data
 @NoArgsConstructor
 public class AnimalType {
