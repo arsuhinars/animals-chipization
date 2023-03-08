@@ -26,8 +26,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                .requestMatchers("/registration").permitAll()
-                .requestMatchers(HttpMethod.GET,  "/account/**", "/locations/**", "/animals/**").permitAll()
+                .requestMatchers("/registration").anonymous()
+                .requestMatchers("/error").permitAll()
+                .requestMatchers(HttpMethod.GET,  "/accounts/**", "/locations/**", "/animals/**").permitAll()
                 .anyRequest().authenticated()
             )
             .httpBasic()
@@ -35,7 +36,7 @@ public class SecurityConfig {
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .authenticationProvider((authenticationProvider()));
+            .authenticationProvider(authenticationProvider());
 
         return http.build();
     }
