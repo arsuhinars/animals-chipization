@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
+import java.util.List;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/accounts")
 @Validated
 public class AccountController {
     @Autowired
@@ -25,5 +25,16 @@ public class AccountController {
         }
 
         return account;
+    }
+
+    @GetMapping("/search")
+    public List<AccountSchema> searchAccounts(
+        @RequestParam(required = false) String firstName,
+        @RequestParam(required = false) String lastName,
+        @RequestParam(required = false) String email,
+        @RequestParam(defaultValue = "0") @Min(0) Integer from,
+        @RequestParam(defaultValue = "10") @Min(1) Integer size
+    ) {
+        return accountService.search(firstName, lastName, email, from, size);
     }
 }
