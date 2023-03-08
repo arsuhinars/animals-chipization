@@ -4,14 +4,14 @@ import org.springframework.http.HttpStatus;
 
 public class AlreadyExistException extends AppException {
     public AlreadyExistException() {
-        super("Same entity already exists", HttpStatus.CONFLICT.value());
+        super("Same entity already exists", HttpStatus.CONFLICT);
     }
 
     public AlreadyExistException(String details) {
-        super(details, HttpStatus.CONFLICT.value());
+        super(details, HttpStatus.CONFLICT);
     }
 
-    public AlreadyExistException(String details, Integer statusCode) {
+    public AlreadyExistException(String details, HttpStatus statusCode) {
         super(details, statusCode);
     }
 }
