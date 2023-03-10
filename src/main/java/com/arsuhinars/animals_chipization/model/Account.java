@@ -6,15 +6,19 @@ import lombok.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "accounts")
+@Table(name = "accounts", indexes = {
+    @Index(columnList = "email", unique = true)
+})
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.PRIVATE)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NonNull
