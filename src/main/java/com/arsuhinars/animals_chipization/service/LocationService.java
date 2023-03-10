@@ -10,7 +10,7 @@ public interface LocationService {
 
     LocationSchema getById(Long id);
 
-    LocationSchema update(LocationSchema location) throws NotFoundException, AlreadyExistException;
+    LocationSchema update(Long id, LocationSchema location) throws NotFoundException, AlreadyExistException;
 
     void delete(Long id) throws NotFoundException, BoundException;
 }
