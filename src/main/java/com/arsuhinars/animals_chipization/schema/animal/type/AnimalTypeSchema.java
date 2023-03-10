@@ -1,4 +1,4 @@
-package com.arsuhinars.animals_chipization.schema.animal;
+package com.arsuhinars.animals_chipization.schema.animal.type;
 
 import com.arsuhinars.animals_chipization.model.AnimalType;
 import jakarta.validation.constraints.NotBlank;
