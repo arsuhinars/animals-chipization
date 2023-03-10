@@ -11,10 +11,12 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class AnimalVisitedLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.PRIVATE)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NonNull

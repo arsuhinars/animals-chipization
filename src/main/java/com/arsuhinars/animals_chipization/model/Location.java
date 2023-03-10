@@ -13,10 +13,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.PRIVATE)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NonNull

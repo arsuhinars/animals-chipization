@@ -9,12 +9,16 @@ import java.util.Set;
 @Table(name = "animals_types", indexes = {
     @Index(columnList = "type", unique = true)
 })
-@Data
 @NoArgsConstructor
+@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class AnimalType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.PRIVATE)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @NonNull
