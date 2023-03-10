@@ -6,7 +6,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "animals_visited_locations")
+@Table(name = "animals_visited_locations", indexes = {
+    @Index(columnList = "visitedAt")
+})
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Getter
