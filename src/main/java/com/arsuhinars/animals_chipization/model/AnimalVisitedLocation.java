@@ -3,7 +3,7 @@ package com.arsuhinars.animals_chipization.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "animals_visited_locations", indexes = {
@@ -32,5 +32,5 @@ public class AnimalVisitedLocation {
     private Location visitedLocation;
 
     @NonNull
-    LocalDateTime visitedAt;
+    OffsetDateTime visitedAt;
 }
