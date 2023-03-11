@@ -7,7 +7,9 @@ import com.arsuhinars.animals_chipization.model.Location;
 import com.arsuhinars.animals_chipization.repository.LocationRepository;
 import com.arsuhinars.animals_chipization.schema.LocationSchema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LocationServiceImpl implements LocationService {
     @Autowired
     private LocationRepository repository;
