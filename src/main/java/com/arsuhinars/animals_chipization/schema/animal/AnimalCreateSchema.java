@@ -1,47 +1,56 @@
 package com.arsuhinars.animals_chipization.schema.animal;
 
 import com.arsuhinars.animals_chipization.model.AnimalGender;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.NonNull;
+import com.arsuhinars.animals_chipization.validation.FloatingMin;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class AnimalCreateSchema {
-    @NonNull
     @NotNull
-    @Size(min = 1)
+    @NotEmpty
     private List<@Min(1) Long> animalTypes;
 
-    @NonNull
     @NotNull
-    @Min(0)
+    @FloatingMin(0f)
     private Float weight;
 
-    @NonNull
     @NotNull
-    @Min(0)
+    @FloatingMin(0f)
     private Float length;
 
-    @NonNull
     @NotNull
-    @Min(0)
+    @FloatingMin(0f)
     private Float height;
 
-    @NonNull
     @NotNull
     private AnimalGender gender;
 
-    @NonNull
     @NotNull
     @Min(1)
     private Long chipperId;
 
-    @NonNull
     @NotNull
     @Min(1)
     private Long chippingLocationId;
+
+    public AnimalCreateSchema(
+        List<Long> animalTypes,
+        Float weight, Float length, Float height,
+        AnimalGender gender,
+        Long chipperId,
+        Long chippingLocationId
+    ) {
+        this.animalTypes = animalTypes;
+        this.weight = weight;
+        this.length = length;
+        this.height = height;
+        this.gender = gender;
+        this.chipperId = chipperId;
+        this.chippingLocationId = chippingLocationId;
+    }
 }

@@ -3,26 +3,30 @@ package com.arsuhinars.animals_chipization.schema.animal.location;
 import com.arsuhinars.animals_chipization.model.AnimalVisitedLocation;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
-@Data
+@Getter
+@Setter
 public class AnimalLocationSchema {
-    @NonNull
     @NotNull
     @Min(1)
     private Long id;
 
-    @NonNull
     @NotNull
-    private LocalDateTime dateTimeOfVisitLocationPoint;
+    private OffsetDateTime dateTimeOfVisitLocationPoint;
 
-    @NonNull
     @NotNull
     @Min(1)
     private Long locationPointId;
+
+    public AnimalLocationSchema(Long id, OffsetDateTime dateTimeOfVisitLocationPoint, Long locationPointId) {
+        this.id = id;
+        this.dateTimeOfVisitLocationPoint = dateTimeOfVisitLocationPoint;
+        this.locationPointId = locationPointId;
+    }
 
     public static AnimalLocationSchema createFromModel(AnimalVisitedLocation location) {
         return new AnimalLocationSchema(

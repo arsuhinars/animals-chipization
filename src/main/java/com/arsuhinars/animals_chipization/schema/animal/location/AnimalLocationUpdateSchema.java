@@ -2,18 +2,22 @@ package com.arsuhinars.animals_chipization.schema.animal.location;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class AnimalLocationUpdateSchema {
-    @NonNull
     @NotNull
     @Min(1)
     private Long visitedLocationPointId;
 
-    @NonNull
     @NotNull
     @Min(1)
     private Long locationPointId;
+
+    public AnimalLocationUpdateSchema(Long visitedLocationPointId, Long locationPointId) {
+        this.visitedLocationPointId = visitedLocationPointId;
+        this.locationPointId = locationPointId;
+    }
 }

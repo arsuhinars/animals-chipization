@@ -2,22 +2,28 @@ package com.arsuhinars.animals_chipization.schema.animal.type;
 
 import com.arsuhinars.animals_chipization.model.AnimalType;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class AnimalTypeSchema {
     private Long id;
 
-    @NonNull
+    @NotNull
     @NotBlank
     private String type;
 
+    public AnimalTypeSchema(Long id, String type) {
+        this.id = id;
+        this.type = type;
+    }
+
     public static AnimalTypeSchema createFromModel(AnimalType animalType) {
-        var animalTypeSchema = new AnimalTypeSchema(
-                animalType.getType()
+        return new AnimalTypeSchema(
+            animalType.getId(),
+            animalType.getType()
         );
-        animalTypeSchema.setId(animalType.getId());
-        return animalTypeSchema;
     }
 }

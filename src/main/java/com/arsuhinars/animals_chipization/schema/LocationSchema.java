@@ -4,31 +4,35 @@ import com.arsuhinars.animals_chipization.model.Location;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class LocationSchema {
     private Long id;
 
-    @NonNull
     @NotNull
     @Min(-90)
     @Max(90)
     private Double latitude;
 
-    @NonNull
     @NotNull
     @Min(-180)
     @Max(180)
     private Double longitude;
 
+    public LocationSchema(Long id, Double latitude, Double longitude) {
+        this.id = id;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     public static LocationSchema createFromModel(Location location) {
-        var locationSchema = new LocationSchema(
-                location.getLatitude(),
-                location.getLongitude()
+        return new LocationSchema(
+            location.getId(),
+            location.getLatitude(),
+            location.getLongitude()
         );
-        locationSchema.setId(locationSchema.getId());
-        return locationSchema;
     }
 }
