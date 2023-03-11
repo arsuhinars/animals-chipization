@@ -7,6 +7,7 @@ import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountUpdateSchema;
 import com.arsuhinars.animals_chipization.security.AccountDetails;
 import com.arsuhinars.animals_chipization.service.AccountService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -47,10 +48,10 @@ public class AccountController {
     @PutMapping("/{id}")
     public AccountSchema updateAccountById(
         @PathVariable @Min(1) Long id,
-        AccountUpdateSchema account,
+        @Valid @RequestBody AccountUpdateSchema account,
         Authentication authentication
     ) throws AlreadyExistException, ForbiddenException {
-        var details = (AccountDetails)authentication.getDetails();
+        var details = (AccountDetails)authentication.getPrincipal();
 
         if (!Objects.equals(details.getAccount().getId(), id)) {
             throw new ForbiddenException("You can only update your own account");
@@ -59,13 +60,12 @@ public class AccountController {
         return service.update(id, account);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public void deleteAccountById(
         @PathVariable @Min(1) Long id,
-        AccountUpdateSchema account,
         Authentication authentication
     ) {
-        var details = (AccountDetails)authentication.getDetails();
+        var details = (AccountDetails)authentication.getPrincipal();
 
         if (!Objects.equals(details.getAccount().getId(), id)) {
             throw new ForbiddenException("You can only delete your own account");
