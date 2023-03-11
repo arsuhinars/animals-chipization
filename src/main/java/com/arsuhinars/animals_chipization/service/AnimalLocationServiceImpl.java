@@ -7,17 +7,18 @@ import com.arsuhinars.animals_chipization.model.LifeStatus;
 import com.arsuhinars.animals_chipization.repository.AnimalRepository;
 import com.arsuhinars.animals_chipization.repository.AnimalVisitedLocationRepository;
 import com.arsuhinars.animals_chipization.repository.LocationRepository;
-import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationCreateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationSchema;
 import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationUpdateSchema;
 import com.arsuhinars.animals_chipization.util.OffsetPageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 
+@Service
 public class AnimalLocationServiceImpl implements AnimalLocationService {
     @Autowired
     private AnimalVisitedLocationRepository repository;
@@ -28,16 +29,16 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
 
     @Override
     public AnimalLocationSchema create(
-        Long animalId, AnimalLocationCreateSchema location
+        Long animalId, Long pointId
     ) throws NotFoundException, IntegrityBreachException {
         var animal = animalRepository.findById(animalId);
         if (animal.isEmpty()) {
             throw new NotFoundException("Animal with id " + animalId + " was not found");
         }
 
-        var point = locationRepository.findById(location.getPointId());
+        var point = locationRepository.findById(pointId);
         if (point.isEmpty()) {
-            throw new NotFoundException("Location with id " + location.getPointId() + " was not found");
+            throw new NotFoundException("Location with id " + pointId + " was not found");
         }
 
         if (animal.get().getLifeStatus() == LifeStatus.DEAD) {
@@ -46,13 +47,13 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
 
         var animalLastPoint = repository.getAnimalLastPoint(animalId);
         if (animalLastPoint.isPresent() &&
-            animalLastPoint.get().getId().equals(location.getPointId())
+            animalLastPoint.get().getVisitedLocation().getId().equals(pointId)
         ) {
             throw new IntegrityBreachException("Unable to add point where animal is already situated");
         }
 
         if (animalLastPoint.isEmpty() &&
-            location.getPointId().equals(animal.get().getChippingLocation().getId())
+            pointId.equals(animal.get().getChippingLocation().getId())
         ) {
             throw new IntegrityBreachException("Unable to add point where animal was chipped");
         }
@@ -61,14 +62,22 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
             repository.save(new AnimalVisitedLocation(
                 animal.get(),
                 point.get(),
-                LocalDateTime.now()
+                OffsetDateTime.now()
             ))
         );
     }
 
     @Override
-    public List<AnimalLocationSchema> search(Long animalId, LocalDateTime start, LocalDateTime end, int from, int size) {
-        return repository.search(animalId, start, end, new OffsetPageable(size, from))
+    public List<AnimalLocationSchema> search(
+        Long animalId, OffsetDateTime start, OffsetDateTime end, int from, int size
+    ) throws NotFoundException {
+        if (!animalRepository.existsById(animalId)) {
+            throw new NotFoundException("Animal with id " + animalId + " was not found");
+        }
+
+        return repository.search(
+            animalId, start, end, new OffsetPageable(size, from, Sort.by("visitedAt").ascending())
+            )
             .stream()
             .map(AnimalLocationSchema::createFromModel)
             .toList();
@@ -92,12 +101,12 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
             );
         }
 
-        var animalVisitedLocations = repository.getSortedAnimalPoints(animalId);
-        var locationIndex = Collections.binarySearch(
-            animalVisitedLocations,
-            visitedPoint.get(),
-            Comparator.comparing(AnimalVisitedLocation::getVisitedAt)
-        );
+        var animalVisitedLocations = animal.get()
+            .getVisitedLocations()
+            .stream()
+            .sorted(Comparator.comparing(AnimalVisitedLocation::getVisitedAt))
+            .toList();
+        var locationIndex = animalVisitedLocations.indexOf(visitedPoint.get());
         if (locationIndex < 0) {
             throw new NotFoundException(
                 "Animal doesn't have visited location with id " + location.getVisitedLocationPointId()
@@ -120,14 +129,15 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
         }
 
         if (location.getLocationPointId().equals(
-            animalVisitedLocations.get(locationIndex).getId()
-        )) {
+                animalVisitedLocations.get(locationIndex).getVisitedLocation().getId()
+            )
+        ) {
             throw new IntegrityBreachException("Unable to change point to the same one");
         }
 
         if (locationIndex < animalVisitedLocations.size() - 1 &&
             location.getLocationPointId().equals(
-                animalVisitedLocations.get(locationIndex + 1).getId()
+                animalVisitedLocations.get(locationIndex + 1).getVisitedLocation().getId()
             )
         ) {
             throw new IntegrityBreachException("The next point is the same");
@@ -135,7 +145,7 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
 
         if (locationIndex > 0 &&
             location.getLocationPointId().equals(
-                animalVisitedLocations.get(locationIndex - 1).getId()
+                animalVisitedLocations.get(locationIndex - 1).getVisitedLocation().getId()
             )
         ) {
             throw new IntegrityBreachException("The previous point is the same");
@@ -143,7 +153,7 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
 
         var dbPoint = visitedPoint.get();
         dbPoint.setVisitedLocation(point.get());
-        dbPoint.setVisitedAt(LocalDateTime.now());
+        dbPoint.setVisitedAt(OffsetDateTime.now());
 
         return AnimalLocationSchema.createFromModel(
             repository.save(dbPoint)
@@ -164,25 +174,28 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
             );
         }
 
-        var animalVisitedLocations = repository.getSortedAnimalPoints(animalId);
-        var locationIndex = Collections.binarySearch(
-            animalVisitedLocations,
-            visitedPoint.get(),
-            Comparator.comparing(AnimalVisitedLocation::getVisitedAt)
-        );
+        var animalVisitedLocations = animal.get()
+            .getVisitedLocations()
+            .stream()
+            .sorted(Comparator.comparing(AnimalVisitedLocation::getVisitedAt))
+            .toList();
+        var locationIndex = animalVisitedLocations.indexOf(visitedPoint.get());
         if (locationIndex < 0) {
             throw new NotFoundException(
                 "Animal doesn't have visited location with id " + locationId
             );
         }
 
-        repository.deleteById(locationId);
         if (locationIndex == 0 &&
+            animalVisitedLocations.size() > 1 &&
             animal.get().getChippingLocation().getId().equals(
-                animalVisitedLocations.get(locationIndex + 1).getId()
+                animalVisitedLocations.get(locationIndex + 1).getVisitedLocation().getId()
             )
         ) {
-            repository.delete(animalVisitedLocations.get(locationIndex + 1));
+            animal.get().getVisitedLocations().remove(animalVisitedLocations.get(1));
         }
+        animal.get().getVisitedLocations().remove(visitedPoint.get());
+
+        animalRepository.save(animal.get());
     }
 }
