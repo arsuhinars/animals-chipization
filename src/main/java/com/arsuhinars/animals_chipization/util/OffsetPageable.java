@@ -1,16 +1,21 @@
 package com.arsuhinars.animals_chipization.util;
 
+import lombok.NonNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public class OffsetPageable implements Pageable {
 
-    private int limit;
-    private int offset;
+    private final int limit;
+    private final int offset;
 
-    private Sort sort = Sort.by("id");
+    private final Sort sort;
 
     public OffsetPageable(int limit, int offset) {
+        this(limit, offset, Sort.by("id"));
+    }
+
+    public OffsetPageable(int limit, int offset, Sort sort) {
         if (limit < 1) {
             throw new IllegalArgumentException("Limit must not be less than one!");
         }
@@ -19,6 +24,7 @@ public class OffsetPageable implements Pageable {
         }
         this.limit = limit;
         this.offset = offset;
+        this.sort = sort;
     }
 
     @Override
@@ -37,28 +43,28 @@ public class OffsetPageable implements Pageable {
     }
 
     @Override
-    public Sort getSort() {
+    public @NonNull Sort getSort() {
         return sort;
     }
 
     @Override
-    public Pageable next() {
+    public @NonNull Pageable next() {
         return new OffsetPageable(getPageSize(), (int)(getOffset() + getPageSize()));
     }
 
     @Override
-    public Pageable previousOrFirst() {
+    public @NonNull Pageable previousOrFirst() {
         return hasPrevious() ?
             new OffsetPageable(getPageSize(), (int)(getOffset() - getPageSize())) : first();
     }
 
     @Override
-    public Pageable first() {
+    public @NonNull Pageable first() {
         return new OffsetPageable(getPageSize(), 0);
     }
 
     @Override
-    public Pageable withPage(int pageNumber) {
+    public @NonNull Pageable withPage(int pageNumber) {
         return new OffsetPageable(getPageSize(), pageNumber * getPageSize());
     }
 
