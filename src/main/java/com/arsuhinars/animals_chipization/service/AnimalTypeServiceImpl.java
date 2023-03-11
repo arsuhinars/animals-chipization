@@ -7,7 +7,9 @@ import com.arsuhinars.animals_chipization.model.AnimalType;
 import com.arsuhinars.animals_chipization.repository.AnimalTypeRepository;
 import com.arsuhinars.animals_chipization.schema.animal.type.AnimalTypeSchema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AnimalTypeServiceImpl implements AnimalTypeService {
     @Autowired
     private AnimalTypeRepository repository;
