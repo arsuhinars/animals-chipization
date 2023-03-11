@@ -2,21 +2,20 @@ package com.arsuhinars.animals_chipization.service;
 
 import com.arsuhinars.animals_chipization.exception.*;
 import com.arsuhinars.animals_chipization.model.*;
-import com.arsuhinars.animals_chipization.repository.AccountRepository;
-import com.arsuhinars.animals_chipization.repository.AnimalRepository;
-import com.arsuhinars.animals_chipization.repository.AnimalTypeRepository;
-import com.arsuhinars.animals_chipization.repository.LocationRepository;
+import com.arsuhinars.animals_chipization.repository.*;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalCreateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalUpdateSchema;
 import com.arsuhinars.animals_chipization.util.OffsetPageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class AnimalServiceImpl implements AnimalService {
     @Autowired
     private AnimalRepository repository;
@@ -26,6 +25,8 @@ public class AnimalServiceImpl implements AnimalService {
     private AccountRepository accountRepository;
     @Autowired
     private LocationRepository locationRepository;
+    @Autowired
+    private AnimalVisitedLocationRepository animalLocationRepository;
 
     @Override
     public AnimalSchema create(AnimalCreateSchema animal) throws NotFoundException, AlreadyExistException {
@@ -64,7 +65,7 @@ public class AnimalServiceImpl implements AnimalService {
                 animal.getHeight(),
                 animal.getGender(),
                 LifeStatus.ALIVE,
-                LocalDateTime.now(),
+                OffsetDateTime.now(),
                 chipper.get(),
                 chippingLocation.get(),
                 Set.of()
@@ -79,8 +80,8 @@ public class AnimalServiceImpl implements AnimalService {
 
     @Override
     public List<AnimalSchema> search(
-        LocalDateTime start,
-        LocalDateTime end,
+        OffsetDateTime start,
+        OffsetDateTime end,
         Long chipperId,
         Long chippingLocationId,
         LifeStatus lifeStatus,
@@ -95,7 +96,7 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public AnimalSchema update(Long id, AnimalUpdateSchema animal) throws NotFoundException {
+    public AnimalSchema update(Long id, AnimalUpdateSchema animal) throws NotFoundException, IntegrityBreachException {
         var result = repository.findById(id);
         if (result.isEmpty()) {
             throw new NotFoundException("Animal with id " + id + " was not found");
@@ -121,12 +122,26 @@ public class AnimalServiceImpl implements AnimalService {
             throw new NotFoundException("Chipping location with id " + id + " was not found");
         }
 
+        var animalFirstPoint = animalLocationRepository.getAnimalFirstPoint(id);
+        if (animalFirstPoint.isPresent() &&
+            chippingLocation.get().getId().equals(animalFirstPoint.get().getVisitedLocation().getId())
+        ) {
+            throw new IntegrityBreachException("Unable to change animal chipping location to first visited point");
+        }
+
         dbAnimal.setWeight(animal.getWeight());
         dbAnimal.setLength(animal.getLength());
         dbAnimal.setHeight(animal.getHeight());
-        dbAnimal.setLifeStatus(animal.getLifeStatus());
+        dbAnimal.setGender(animal.getGender());
         dbAnimal.setChipper(chipper.get());
         dbAnimal.setChippingLocation(chippingLocation.get());
+
+        if (dbAnimal.getLifeStatus() == LifeStatus.ALIVE &&
+            animal.getLifeStatus() == LifeStatus.DEAD
+        ) {
+            dbAnimal.setLifeStatus(LifeStatus.DEAD);
+            dbAnimal.setDeathDateTime(OffsetDateTime.now());
+        }
 
         return AnimalSchema.createFromModel(repository.save(dbAnimal));
     }
