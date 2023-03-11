@@ -3,7 +3,7 @@ package com.arsuhinars.animals_chipization.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Entity
@@ -50,7 +50,7 @@ public class Animal {
     private LifeStatus lifeStatus;
 
     @NonNull
-    private LocalDateTime chippingDateTime;
+    private OffsetDateTime chippingDateTime;
 
     @NonNull
     @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -63,8 +63,13 @@ public class Animal {
     private Location chippingLocation;
 
     @NonNull
-    @OneToMany(mappedBy = "animal", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToMany(
+        mappedBy = "animal",
+        fetch = FetchType.LAZY,
+        cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+        orphanRemoval = true
+    )
     private Set<AnimalVisitedLocation> visitedLocations;
 
-    private LocalDateTime deathDateTime;
+    private OffsetDateTime deathDateTime;
 }
