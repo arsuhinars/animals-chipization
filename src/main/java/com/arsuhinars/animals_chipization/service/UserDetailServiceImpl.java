@@ -1,7 +1,9 @@
 package com.arsuhinars.animals_chipization.service;
 
+import com.arsuhinars.animals_chipization.model.Account;
 import com.arsuhinars.animals_chipization.repository.AccountRepository;
 import com.arsuhinars.animals_chipization.security.AccountDetails;
+import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,13 +17,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        var result = accountRepository.findByEmail(email);
-        if (result.isEmpty()) {
-            throw new UsernameNotFoundException("No account found with email: " + email);
+        var dbAccount = accountRepository.findByEmail(email).orElse(null);
+        if (dbAccount == null) {
+            throw new UsernameNotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(Account.class, "email", email)
+            );
         }
 
-        return new AccountDetails(
-            result.get()
-        );
+        return new AccountDetails(dbAccount);
     }
 }
