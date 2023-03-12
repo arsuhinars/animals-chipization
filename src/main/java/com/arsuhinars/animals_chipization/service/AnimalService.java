@@ -1,8 +1,8 @@
 package com.arsuhinars.animals_chipization.service;
 
 import com.arsuhinars.animals_chipization.exception.*;
-import com.arsuhinars.animals_chipization.model.AnimalGender;
-import com.arsuhinars.animals_chipization.model.LifeStatus;
+import com.arsuhinars.animals_chipization.enums.Gender;
+import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalCreateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalUpdateSchema;
@@ -21,13 +21,13 @@ public interface AnimalService {
         Long chipperId,
         Long chippingLocationId,
         LifeStatus lifeStatus,
-        AnimalGender gender,
+        Gender gender,
         int from, int size
     );
 
     AnimalSchema update(Long id, AnimalUpdateSchema animal) throws NotFoundException, IntegrityBreachException;
 
-    void delete(Long id) throws NotFoundException, BoundException;
+    void delete(Long id) throws NotFoundException, DependsOnException;
 
     AnimalSchema addType(Long animalId, Long typeId) throws NotFoundException, AlreadyExistException;
 
