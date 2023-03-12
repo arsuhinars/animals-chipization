@@ -1,8 +1,8 @@
 package com.arsuhinars.animals_chipization.controller;
 
 import com.arsuhinars.animals_chipization.exception.*;
-import com.arsuhinars.animals_chipization.model.AnimalGender;
-import com.arsuhinars.animals_chipization.model.LifeStatus;
+import com.arsuhinars.animals_chipization.enums.Gender;
+import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalCreateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalTypeUpdateSchema;
@@ -42,7 +42,7 @@ public class AnimalController {
         @RequestParam(required = false) Long chipperId,
         @RequestParam(required = false) Long chippingLocationId,
         @RequestParam(required = false) LifeStatus lifeStatus,
-        @RequestParam(required = false) AnimalGender gender,
+        @RequestParam(required = false) Gender gender,
         @RequestParam(defaultValue = "0") @Min(0) Integer from,
         @RequestParam(defaultValue = "10") @Min(1) Integer size
     ) {
@@ -75,7 +75,7 @@ public class AnimalController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAnimalById(@PathVariable @Min(1) Long id) throws NotFoundException, BoundException {
+    public void deleteAnimalById(@PathVariable @Min(1) Long id) throws NotFoundException, DependsOnException {
         service.delete(id);
     }
 
