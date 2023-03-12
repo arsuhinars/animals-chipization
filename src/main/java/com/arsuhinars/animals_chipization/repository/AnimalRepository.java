@@ -1,8 +1,8 @@
 package com.arsuhinars.animals_chipization.repository;
 
 import com.arsuhinars.animals_chipization.model.Animal;
-import com.arsuhinars.animals_chipization.model.AnimalGender;
-import com.arsuhinars.animals_chipization.model.LifeStatus;
+import com.arsuhinars.animals_chipization.enums.Gender;
+import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -34,7 +34,7 @@ public interface AnimalRepository extends CrudRepository<Animal, Long> {
         Long chipperId,
         Long chippingLocationId,
         LifeStatus lifeStatus,
-        AnimalGender gender,
+        Gender gender,
         Pageable pageable
     );
 }
