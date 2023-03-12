@@ -1,7 +1,7 @@
 package com.arsuhinars.animals_chipization.service;
 
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
-import com.arsuhinars.animals_chipization.exception.BoundException;
+import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.schema.LocationSchema;
 
@@ -12,5 +12,5 @@ public interface LocationService {
 
     LocationSchema update(Long id, LocationSchema location) throws NotFoundException, AlreadyExistException;
 
-    void delete(Long id) throws NotFoundException, BoundException;
+    void delete(Long id) throws NotFoundException, DependsOnException;
 }
