@@ -1,7 +1,7 @@
 package com.arsuhinars.animals_chipization.schema.animal;
 
-import com.arsuhinars.animals_chipization.model.AnimalGender;
-import com.arsuhinars.animals_chipization.model.LifeStatus;
+import com.arsuhinars.animals_chipization.enums.Gender;
+import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.validation.FloatingMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -24,7 +24,7 @@ public class AnimalUpdateSchema {
     private Float height;
 
     @NotNull
-    private AnimalGender gender;
+    private Gender gender;
 
     @NotNull
     private LifeStatus lifeStatus;
@@ -39,7 +39,7 @@ public class AnimalUpdateSchema {
 
     public AnimalUpdateSchema(
         Float weight, Float length, Float height,
-        AnimalGender gender,
+        Gender gender,
         LifeStatus lifeStatus,
         Long chipperId,
         Long chippingLocationId
