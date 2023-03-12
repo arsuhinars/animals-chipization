@@ -1,7 +1,7 @@
 package com.arsuhinars.animals_chipization.service;
 
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
-import com.arsuhinars.animals_chipization.exception.BoundException;
+import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.schema.account.AccountCreateSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
@@ -20,5 +20,5 @@ public interface AccountService {
 
     AccountSchema update(Long id, AccountUpdateSchema account) throws NotFoundException, AlreadyExistException;
 
-    void delete(Long id) throws NotFoundException, BoundException;
+    void delete(Long id) throws NotFoundException, DependsOnException;
 }
