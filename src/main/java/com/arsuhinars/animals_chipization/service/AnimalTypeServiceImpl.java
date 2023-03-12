@@ -1,11 +1,13 @@
 package com.arsuhinars.animals_chipization.service;
 
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
-import com.arsuhinars.animals_chipization.exception.BoundException;
+import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
+import com.arsuhinars.animals_chipization.model.Animal;
 import com.arsuhinars.animals_chipization.model.AnimalType;
 import com.arsuhinars.animals_chipization.repository.AnimalTypeRepository;
 import com.arsuhinars.animals_chipization.schema.animal.type.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +19,14 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     @Override
     public AnimalTypeSchema create(AnimalTypeSchema animalType) throws AlreadyExistException {
         if (repository.existsByType(animalType.getType())) {
-            throw new AlreadyExistException("Animal type \"" + animalType.getType() + "\" already exists");
+            throw new AlreadyExistException(
+                ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", animalType.getType())
+            );
         }
 
-        return AnimalTypeSchema.createFromModel(
-            repository.save(new AnimalType(
-                animalType.getType()
-            ))
-        );
+        var dbAnimalType = new AnimalType(animalType.getType());
+
+        return AnimalTypeSchema.createFromModel(repository.save(dbAnimalType));
     }
 
     @Override
@@ -36,32 +38,41 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     public AnimalTypeSchema update(
         Long id, AnimalTypeSchema animalType
     ) throws NotFoundException, AlreadyExistException {
-        var result = repository.findById(id);
-        if (result.isEmpty()) {
-            throw new NotFoundException("Animal type with id " + id + " was not found");
+        var dbAnimalType = repository.findById(id).orElse(null);
+        if (dbAnimalType == null) {
+            throw new NotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(AnimalType.class, id)
+            );
         }
 
-        if (repository.existsByType(animalType.getType())) {
-            throw new AlreadyExistException("Animal type \"" + animalType.getType() + "\" already exists");
+        if (!dbAnimalType.getType().equals(animalType.getType()) &&
+            repository.existsByType(animalType.getType())
+        ) {
+            throw new AlreadyExistException(
+                ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", animalType.getType())
+            );
         }
 
-        var dbAnimalType = result.get();
         dbAnimalType.setType(animalType.getType());
 
         return AnimalTypeSchema.createFromModel(repository.save(dbAnimalType));
     }
 
     @Override
-    public void delete(Long id) throws NotFoundException, BoundException {
-        var result = repository.findById(id);
-        if (result.isEmpty()) {
-            throw new NotFoundException("Animal type with id " + id + " was not found");
+    public void delete(Long id) throws NotFoundException, DependsOnException {
+        var dbAnimalType = repository.findById(id).orElse(null);
+        if (dbAnimalType == null) {
+            throw new NotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(AnimalType.class, id)
+            );
         }
 
-        if (!result.get().getAnimals().isEmpty()) {
-            throw new BoundException("Animal type is used by some animal");
+        if (!dbAnimalType.getAnimals().isEmpty()) {
+            throw new DependsOnException(
+                ErrorDetailsFormatter.formatDependsOnError(dbAnimalType, Animal.class)
+            );
         }
 
-        repository.deleteById(id);
+        repository.delete(dbAnimalType);
     }
 }
