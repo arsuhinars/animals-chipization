@@ -14,11 +14,13 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class AnimalVisitedLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.PRIVATE)
     @EqualsAndHashCode.Include
+    @ToString.Include
     private Long id;
 
     @NonNull

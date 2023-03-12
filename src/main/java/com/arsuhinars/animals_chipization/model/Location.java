@@ -14,6 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,8 +29,10 @@ public class Location {
     private Double longitude;
 
     @OneToMany(mappedBy = "chippingLocation")
+    @ToString.Exclude
     private Set<Animal> chippedAnimals;
 
     @OneToMany(mappedBy = "visitedLocation")
+    @ToString.Exclude
     private Set<AnimalVisitedLocation> visitedAnimals;
 }

@@ -1,5 +1,7 @@
 package com.arsuhinars.animals_chipization.model;
 
+import com.arsuhinars.animals_chipization.enums.Gender;
+import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,15 +19,17 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class Animal {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.PRIVATE)
     @EqualsAndHashCode.Include
+    @ToString.Include
     private Long id;
 
     @NonNull
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE })
     @JoinTable(
         name = "types",
         joinColumns = @JoinColumn(name = "animal_id"),
@@ -44,7 +48,7 @@ public class Animal {
 
     @NonNull
     @Enumerated(EnumType.ORDINAL)
-    private AnimalGender gender;
+    private Gender gender;
 
     @NonNull
     private LifeStatus lifeStatus;
@@ -53,12 +57,12 @@ public class Animal {
     private OffsetDateTime chippingDateTime;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "chipper_id", nullable = false)
     private Account chipper;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "chipping_location_id", nullable = false)
     private Location chippingLocation;
 
@@ -66,7 +70,7 @@ public class Animal {
     @OneToMany(
         mappedBy = "animal",
         fetch = FetchType.LAZY,
-        cascade = { CascadeType.PERSIST, CascadeType.MERGE },
+        cascade = { CascadeType.MERGE, CascadeType.PERSIST },
         orphanRemoval = true
     )
     private Set<AnimalVisitedLocation> visitedLocations;
