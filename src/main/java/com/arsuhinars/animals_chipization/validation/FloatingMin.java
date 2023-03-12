@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FloatingMin {
-    String message() default "";
+    String message() default "Value must be greater than {value}";
 
     Class<?>[] groups() default {};
 
