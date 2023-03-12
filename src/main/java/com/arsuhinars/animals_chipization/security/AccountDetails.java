@@ -50,6 +50,6 @@ public class AccountDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return account.getIsActive();
+        return true;
     }
 }
