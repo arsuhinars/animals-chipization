@@ -8,7 +8,7 @@ import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationU
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public interface AnimalLocationService {
+public interface VisitedLocationService {
     AnimalLocationSchema create(
         Long animalId, Long pointId
     ) throws NotFoundException, IntegrityBreachException;
