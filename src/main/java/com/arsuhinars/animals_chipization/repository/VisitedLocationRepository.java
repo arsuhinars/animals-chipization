@@ -10,7 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface AnimalVisitedLocationRepository extends CrudRepository<AnimalVisitedLocation, Long> {
+public interface VisitedLocationRepository extends CrudRepository<AnimalVisitedLocation, Long> {
     @Query("""
         SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
         WHERE
