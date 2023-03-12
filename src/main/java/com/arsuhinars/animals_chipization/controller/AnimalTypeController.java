@@ -1,7 +1,7 @@
 package com.arsuhinars.animals_chipization.controller;
 
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
-import com.arsuhinars.animals_chipization.exception.BoundException;
+import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.schema.animal.type.AnimalTypeSchema;
 import com.arsuhinars.animals_chipization.service.AnimalTypeService;
@@ -48,7 +48,7 @@ public class AnimalTypeController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAnimalTypeById(@PathVariable @Min(1) Long id) throws NotFoundException, BoundException {
+    public void deleteAnimalTypeById(@PathVariable @Min(1) Long id) throws NotFoundException, DependsOnException {
         service.delete(id);
     }
 }
