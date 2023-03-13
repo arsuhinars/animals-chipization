@@ -3,8 +3,10 @@ package com.arsuhinars.animals_chipization.controller;
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
+import com.arsuhinars.animals_chipization.model.Location;
 import com.arsuhinars.animals_chipization.schema.LocationSchema;
 import com.arsuhinars.animals_chipization.service.LocationService;
+import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,9 @@ public class LocationController {
     public LocationSchema getLocationById(@PathVariable @Min(1) Long id) throws NotFoundException {
         var location = service.getById(id);
         if (location == null) {
-            throw new NotFoundException("Location with id " + id + " was not found");
+            throw new NotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(Location.class, id)
+            );
         }
 
         return location;

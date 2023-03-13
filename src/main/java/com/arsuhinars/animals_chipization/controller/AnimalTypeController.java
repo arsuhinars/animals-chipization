@@ -3,8 +3,10 @@ package com.arsuhinars.animals_chipization.controller;
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
+import com.arsuhinars.animals_chipization.model.AnimalType;
 import com.arsuhinars.animals_chipization.schema.animal.type.AnimalTypeSchema;
 import com.arsuhinars.animals_chipization.service.AnimalTypeService;
+import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,9 @@ public class AnimalTypeController {
     ) throws NotFoundException {
         var animalType = service.getById(id);
         if (animalType == null) {
-            throw new NotFoundException("Animal type with id " + id + "was not found");
+            throw new NotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(AnimalType.class, id)
+            );
         }
 
         return animalType;

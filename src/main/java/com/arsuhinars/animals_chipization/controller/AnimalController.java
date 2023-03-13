@@ -3,11 +3,13 @@ package com.arsuhinars.animals_chipization.controller;
 import com.arsuhinars.animals_chipization.exception.*;
 import com.arsuhinars.animals_chipization.enums.Gender;
 import com.arsuhinars.animals_chipization.enums.LifeStatus;
+import com.arsuhinars.animals_chipization.model.Animal;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalCreateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalTypeUpdateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalUpdateSchema;
 import com.arsuhinars.animals_chipization.service.AnimalService;
+import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,9 @@ public class AnimalController {
     public AnimalSchema getAnimalById(@PathVariable @Min(1) Long id) throws NotFoundException {
         var animal = service.getById(id);
         if (animal == null) {
-            throw new NotFoundException("Animal with id " + id + " was not found");
+            throw new NotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(Animal.class, id)
+            );
         }
 
         return animal;

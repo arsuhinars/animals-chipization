@@ -3,10 +3,12 @@ package com.arsuhinars.animals_chipization.controller;
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.ForbiddenException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
+import com.arsuhinars.animals_chipization.model.Account;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountUpdateSchema;
 import com.arsuhinars.animals_chipization.security.AccountDetails;
 import com.arsuhinars.animals_chipization.service.AccountService;
+import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,9 @@ public class AccountController {
     public AccountSchema getAccountById(@PathVariable @Min(1) Long id) throws NotFoundException {
         var account = service.getById(id);
         if (account == null) {
-            throw new NotFoundException("Account was not found");
+            throw new NotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(Account.class, id)
+            );
         }
 
         return account;
@@ -54,7 +58,7 @@ public class AccountController {
         var details = (AccountDetails)authentication.getPrincipal();
 
         if (!Objects.equals(details.getAccount().getId(), id)) {
-            throw new ForbiddenException("You can only update your own account");
+            throw new ForbiddenException();
         }
 
         return service.update(id, account);
@@ -68,7 +72,7 @@ public class AccountController {
         var details = (AccountDetails)authentication.getPrincipal();
 
         if (!Objects.equals(details.getAccount().getId(), id)) {
-            throw new ForbiddenException("You can only delete your own account");
+            throw new ForbiddenException();
         }
 
         service.delete(id);
