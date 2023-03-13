@@ -1,7 +1,6 @@
 package com.arsuhinars.animals_chipization.repository;
 
 import com.arsuhinars.animals_chipization.model.Account;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -15,10 +14,10 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
 
     @Query(
         value = """
-            SELECT *, set_limit(0.1) FROM accounts WHERE
-                (?1 IS NULL OR LOWER(accounts.first_name) % ?1) AND
-                (?2 IS NULL OR LOWER(accounts.last_name) % ?2) AND
-                (?3 IS NULL OR LOWER(accounts.email) % ?3)
+            SELECT * FROM accounts WHERE
+                (?1 IS NULL OR accounts.first_name ILIKE CONCAT('%', ?1, '%')) AND
+                (?2 IS NULL OR accounts.last_name ILIKE CONCAT('%', ?2, '%')) AND
+                (?3 IS NULL OR accounts.email ILIKE CONCAT('%', ?3, '%'))
             ORDER BY accounts.id ASC
             LIMIT ?4
             OFFSET ?5
