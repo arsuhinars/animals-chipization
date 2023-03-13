@@ -4,6 +4,10 @@ version: "3.9"
 services:
   database:
     image: postgres:15
+    healthcheck:
+      test: pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+      interval: 10s
+      start_period: 5s
     volumes:
       - /var/lib/postgresql/data/
     secrets:
@@ -28,7 +32,8 @@ services:
       SPRING_DATASOURCE_URL: $SPRING_DATASOURCE_URL
       SERVER_PORT: $SERVER_PORT
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   tests: 
     image: mrexpen/planet_olymp_phase1
