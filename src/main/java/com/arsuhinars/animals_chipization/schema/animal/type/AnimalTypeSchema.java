@@ -11,7 +11,6 @@ import lombok.Setter;
 public class AnimalTypeSchema {
     private Long id;
 
-    @NotNull
     @NotBlank
     private String type;
 
