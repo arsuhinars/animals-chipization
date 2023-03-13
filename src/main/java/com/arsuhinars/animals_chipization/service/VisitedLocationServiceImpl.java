@@ -18,7 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.Comparator;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -76,7 +76,7 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
         }
 
         var dbLocation = new AnimalVisitedLocation(
-            animal, point, OffsetDateTime.now()
+            animal, point, OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS)
         );
 
         return AnimalLocationSchema.createFromModel(repository.save(dbLocation));
@@ -167,7 +167,6 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
         }
 
         visitedLocation.setVisitedLocation(point);
-        visitedLocation.setVisitedAt(OffsetDateTime.now());
 
         return AnimalLocationSchema.createFromModel(repository.save(visitedLocation));
     }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +68,7 @@ public class AnimalServiceImpl implements AnimalService {
             animal.getHeight(),
             animal.getGender(),
             LifeStatus.ALIVE,
-            OffsetDateTime.now(),
+            OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS),
             chipper,
             chippingLocation,
             Set.of()
@@ -150,7 +151,7 @@ public class AnimalServiceImpl implements AnimalService {
             animal.getLifeStatus() == LifeStatus.DEAD
         ) {
             dbAnimal.setLifeStatus(LifeStatus.DEAD);
-            dbAnimal.setDeathDateTime(OffsetDateTime.now());
+            dbAnimal.setDeathDateTime(OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         }
 
         return AnimalSchema.createFromModel(repository.save(dbAnimal));
