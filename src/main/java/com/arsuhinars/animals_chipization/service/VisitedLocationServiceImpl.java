@@ -93,7 +93,7 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
         }
 
         return repository.search(
-            animalId, start, end, new OffsetPageable(size, from, Sort.by("visitedAt").ascending())
+            animalId, start, end, new OffsetPageable(size, from, Sort.by("visitedAt", "id").ascending())
             )
             .stream()
             .map(AnimalLocationSchema::createFromModel)
@@ -122,10 +122,7 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
             );
         }
 
-        var animalVisitedLocations = animal.getVisitedLocations()
-            .stream()
-            .sorted(Comparator.comparing(AnimalVisitedLocation::getVisitedAt))
-            .toList();
+        var animalVisitedLocations = repository.getSortedAnimalPoints(animalId);
 
         var locationIndex = animalVisitedLocations.indexOf(visitedLocation);
         if (locationIndex < 0) {
@@ -191,10 +188,7 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
             );
         }
 
-        var animalVisitedLocations = animal.getVisitedLocations()
-            .stream()
-            .sorted(Comparator.comparing(AnimalVisitedLocation::getVisitedAt))
-            .toList();
+        var animalVisitedLocations = repository.getSortedAnimalPoints(animalId);
 
         var locationIndex = animalVisitedLocations.indexOf(visitedLocation);
         if (locationIndex < 0) {

@@ -28,21 +28,23 @@ public interface VisitedLocationRepository extends CrudRepository<AnimalVisitedL
     @Query("""
         SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
         WHERE a.id = ?1
-        ORDER BY loc.visitedAt ASC LIMIT 1
+        ORDER BY loc.visitedAt ASC, loc.id ASC
+        LIMIT 1
         """)
     Optional<AnimalVisitedLocation> getAnimalFirstPoint(Long animalId);
 
     @Query("""
         SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
         WHERE a.id = ?1
-        ORDER BY loc.visitedAt DESC LIMIT 1
+        ORDER BY loc.visitedAt DESC, loc.id DESC
+        LIMIT 1
         """)
     Optional<AnimalVisitedLocation> getAnimalLastPoint(Long animalId);
 
     @Query("""
         SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
         WHERE a.id = ?1
-        ORDER BY loc.visitedAt ASC
+        ORDER BY loc.visitedAt ASC, loc.id ASC
         """)
     List<AnimalVisitedLocation> getSortedAnimalPoints(Long animalId);
 }
