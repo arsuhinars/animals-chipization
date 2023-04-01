@@ -5,12 +5,14 @@ import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.schema.LocationSchema;
 
+import java.util.Optional;
+
 public interface LocationService {
-    LocationSchema create(LocationSchema location) throws AlreadyExistException;
+    LocationSchema create(LocationSchema schema) throws AlreadyExistException;
 
-    LocationSchema getById(Long id);
+    Optional<LocationSchema> getById(Long id);
 
-    LocationSchema update(Long id, LocationSchema location) throws NotFoundException, AlreadyExistException;
+    LocationSchema update(Long id, LocationSchema schema) throws NotFoundException, AlreadyExistException;
 
     void delete(Long id) throws NotFoundException, DependsOnException;
 }

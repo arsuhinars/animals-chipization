@@ -12,87 +12,88 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LocationServiceImpl implements LocationService {
-    @Autowired
-    private LocationRepository repository;
+    private final LocationRepository repository;
+
+    public LocationServiceImpl(LocationRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
-    public LocationSchema create(LocationSchema location) throws AlreadyExistException {
+    public LocationSchema create(LocationSchema schema) throws AlreadyExistException {
         if (repository.existsByLatitudeAndLongitude(
-                location.getLatitude(),
-                location.getLongitude()
+                schema.getLatitude(),
+                schema.getLongitude()
             )
         ) {
             throw new AlreadyExistException(
                 ErrorDetailsFormatter.formatAlreadyExistsError(
                     Location.class,
                     "[latitude, longitude]",
-                    List.of(location.getLatitude(), location.getLongitude())
+                    List.of(schema.getLatitude(), schema.getLongitude())
                 )
             );
         }
 
-        var dbLocation = new Location(
-            location.getLatitude(),
-            location.getLongitude()
+        var location = new Location(
+            schema.getLatitude(), schema.getLongitude()
         );
 
-        return LocationSchema.createFromModel(repository.save(dbLocation));
+        return new LocationSchema(repository.save(location));
     }
 
     @Override
-    public LocationSchema getById(Long id) {
-        return repository.findById(id).map(LocationSchema::createFromModel).orElse(null);
+    public Optional<LocationSchema> getById(Long id) {
+        return repository.findById(id).map(LocationSchema::new);
     }
 
     @Override
-    public LocationSchema update(Long id, LocationSchema location) throws NotFoundException, AlreadyExistException {
-        var dbLocation = repository.findById(id).orElse(null);
-        if (dbLocation == null) {
+    public LocationSchema update(Long id, LocationSchema schema) throws NotFoundException, AlreadyExistException {
+        var location = repository.findById(id).orElse(null);
+        if (location == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Location.class, id)
             );
         }
 
         if (repository.existsByLatitudeAndLongitude(
-                location.getLatitude(),
-                location.getLongitude()
-            )
+            schema.getLatitude(), schema.getLongitude())
         ) {
             throw new AlreadyExistException(
                 ErrorDetailsFormatter.formatAlreadyExistsError(
                     Location.class,
                     "[latitude, longitude]",
-                    List.of(location.getLatitude(), location.getLongitude())
+                    List.of(schema.getLatitude(), schema.getLongitude())
                 )
             );
         }
 
-        dbLocation.setLatitude(location.getLatitude());
-        dbLocation.setLongitude(location.getLongitude());
+        location.setLatitude(schema.getLatitude());
+        location.setLongitude(schema.getLongitude());
 
-        return LocationSchema.createFromModel(repository.save(dbLocation));
+        return new LocationSchema(repository.save(location));
     }
 
     @Override
     public void delete(Long id) throws NotFoundException, DependsOnException {
-        var dbLocation = repository.findById(id).orElse(null);
-        if (dbLocation == null) {
+        var location = repository.findById(id).orElse(null);
+        if (location == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Location.class, id)
             );
         }
 
-        if (!dbLocation.getChippedAnimals().isEmpty() ||
-            !dbLocation.getVisitedAnimals().isEmpty()
+        if (!location.getChippedAnimals().isEmpty() ||
+            !location.getVisitedAnimals().isEmpty()
         ) {
             throw new DependsOnException(
-                ErrorDetailsFormatter.formatDependsOnError(dbLocation, Animal.class)
+                ErrorDetailsFormatter.formatDependsOnError(location, Animal.class)
             );
         }
 
-        repository.delete(dbLocation);
+        repository.delete(location);
     }
 }
