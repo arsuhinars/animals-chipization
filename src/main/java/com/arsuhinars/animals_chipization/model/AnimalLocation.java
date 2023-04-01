@@ -15,7 +15,7 @@ import java.time.OffsetDateTime;
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-public class AnimalVisitedLocation {
+public class AnimalLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Setter(AccessLevel.PRIVATE)
@@ -34,5 +34,6 @@ public class AnimalVisitedLocation {
     private Location visitedLocation;
 
     @NonNull
-    OffsetDateTime visitedAt;
+    @Column(nullable = false)
+    private OffsetDateTime visitedAt;
 }
