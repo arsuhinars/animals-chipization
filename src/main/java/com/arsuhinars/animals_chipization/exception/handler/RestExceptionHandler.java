@@ -16,12 +16,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({AppException.class})
     @RequestMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> handleAppException(AppException ex, WebRequest request) {
-        return new ResponseEntity<String>(ex.getDetails(), ex.getStatusCode());
+        return new ResponseEntity<>(ex.getDetails(), ex.getStatusCode());
     }
 
     @ExceptionHandler({ValidationException.class})
     @RequestMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> handleValidationException(ValidationException ex, WebRequest request) {
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
