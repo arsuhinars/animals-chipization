@@ -9,7 +9,6 @@ import com.arsuhinars.animals_chipization.service.LocationService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +17,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/locations")
 @Validated
 public class LocationController {
-    @Autowired
-    private LocationService service;
+    private final LocationService service;
+
+    public LocationController(LocationService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{id}")
     public LocationSchema getLocationById(@PathVariable @Min(1) Long id) throws NotFoundException {
         var location = service.getById(id);
-        if (location == null) {
+        if (location.isEmpty()) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Location.class, id)
             );
         }
 
-        return location;
+        return location.get();
     }
 
     @PostMapping
