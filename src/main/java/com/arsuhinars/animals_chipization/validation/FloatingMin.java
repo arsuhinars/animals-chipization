@@ -22,4 +22,6 @@ public @interface FloatingMin {
     Class<? extends Payload>[] payload() default {};
 
     float value();
+
+    boolean inclusive() default false;
 }
