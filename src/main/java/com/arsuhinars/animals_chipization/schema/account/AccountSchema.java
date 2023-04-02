@@ -5,11 +5,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class AccountSchema {
     @NotNull
     @Min(1)
@@ -25,19 +27,10 @@ public class AccountSchema {
     @Email
     private String email;
 
-    public AccountSchema(Long id, String firstName, String lastName, String email) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-    }
-
-    public static AccountSchema createFromModel(Account account) {
-        return new AccountSchema(
-            account.getId(),
-            account.getFirstName(),
-            account.getLastName(),
-            account.getEmail()
-        );
+    public AccountSchema(Account account) {
+        this.id = account.getId();
+        this.firstName = account.getFirstName();
+        this.lastName = account.getLastName();
+        this.email = account.getEmail();
     }
 }

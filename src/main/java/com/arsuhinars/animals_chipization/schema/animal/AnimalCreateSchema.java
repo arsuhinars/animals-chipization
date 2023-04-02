@@ -2,8 +2,9 @@ package com.arsuhinars.animals_chipization.schema.animal;
 
 import com.arsuhinars.animals_chipization.enums.Gender;
 import com.arsuhinars.animals_chipization.validation.FloatingMin;
-import com.arsuhinars.animals_chipization.validation.Unique;
+import com.arsuhinars.animals_chipization.validation.UniqueItems;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,10 +12,11 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class AnimalCreateSchema {
     @NotNull
     @NotEmpty
-    @Unique
+    @UniqueItems
     private List<@Min(1) Long> animalTypes;
 
     @NotNull
@@ -39,20 +41,4 @@ public class AnimalCreateSchema {
     @NotNull
     @Min(1)
     private Long chippingLocationId;
-
-    public AnimalCreateSchema(
-        List<Long> animalTypes,
-        Float weight, Float length, Float height,
-        Gender gender,
-        Long chipperId,
-        Long chippingLocationId
-    ) {
-        this.animalTypes = animalTypes;
-        this.weight = weight;
-        this.length = length;
-        this.height = height;
-        this.gender = gender;
-        this.chipperId = chipperId;
-        this.chippingLocationId = chippingLocationId;
-    }
 }

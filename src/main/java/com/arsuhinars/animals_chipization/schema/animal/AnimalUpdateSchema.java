@@ -5,11 +5,13 @@ import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.validation.FloatingMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class AnimalUpdateSchema {
     @NotNull
     @FloatingMin(0f)
@@ -36,20 +38,4 @@ public class AnimalUpdateSchema {
     @NotNull
     @Min(1)
     private Long chippingLocationId;
-
-    public AnimalUpdateSchema(
-        Float weight, Float length, Float height,
-        Gender gender,
-        LifeStatus lifeStatus,
-        Long chipperId,
-        Long chippingLocationId
-    ) {
-        this.weight = weight;
-        this.length = length;
-        this.height = height;
-        this.gender = gender;
-        this.lifeStatus = lifeStatus;
-        this.chipperId = chipperId;
-        this.chippingLocationId = chippingLocationId;
-    }
 }
