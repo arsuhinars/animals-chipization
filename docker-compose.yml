@@ -20,7 +20,8 @@ services:
 
   backend:
     build:
-      context: .
+      dockerfile: .
+      target: run
     ports:
       - "$SERVER_PORT:$SERVER_PORT"
     secrets:

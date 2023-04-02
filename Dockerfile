@@ -13,7 +13,7 @@ RUN ./mvnw clean install
 
 
 # Run stage
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-alpine AS run
 
 ENV SPRING_PROFILES_ACTIVE=docker
 
