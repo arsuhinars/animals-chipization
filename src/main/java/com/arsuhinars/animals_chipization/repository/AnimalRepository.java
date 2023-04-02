@@ -3,6 +3,7 @@ package com.arsuhinars.animals_chipization.repository;
 import com.arsuhinars.animals_chipization.model.Animal;
 import com.arsuhinars.animals_chipization.enums.Gender;
 import com.arsuhinars.animals_chipization.enums.LifeStatus;
+import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -29,12 +30,12 @@ public interface AnimalRepository extends CrudRepository<Animal, Long> {
         )
         """)
     Page<Animal> search(
-        OffsetDateTime start,
-        OffsetDateTime end,
-        Long chipperId,
-        Long chippingLocationId,
-        LifeStatus lifeStatus,
-        Gender gender,
+        @Nullable OffsetDateTime start,
+        @Nullable OffsetDateTime end,
+        @Nullable Long chipperId,
+        @Nullable Long chippingLocationId,
+        @Nullable LifeStatus lifeStatus,
+        @Nullable Gender gender,
         Pageable pageable
     );
 }
