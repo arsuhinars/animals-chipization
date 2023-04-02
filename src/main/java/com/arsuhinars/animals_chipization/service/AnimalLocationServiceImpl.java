@@ -3,16 +3,17 @@ package com.arsuhinars.animals_chipization.service;
 import com.arsuhinars.animals_chipization.exception.IntegrityBreachException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.Animal;
-import com.arsuhinars.animals_chipization.model.AnimalVisitedLocation;
+import com.arsuhinars.animals_chipization.model.AnimalLocation;
 import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.model.Location;
 import com.arsuhinars.animals_chipization.repository.AnimalRepository;
-import com.arsuhinars.animals_chipization.repository.VisitedLocationRepository;
+import com.arsuhinars.animals_chipization.repository.AnimalLocationRepository;
 import com.arsuhinars.animals_chipization.repository.LocationRepository;
-import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationSchema;
-import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationUpdateSchema;
+import com.arsuhinars.animals_chipization.schema.animal_location.AnimalLocationSchema;
+import com.arsuhinars.animals_chipization.schema.animal_location.AnimalLocationUpdateSchema;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import com.arsuhinars.animals_chipization.util.OffsetPageable;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -22,16 +23,20 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
-public class VisitedLocationServiceImpl implements VisitedLocationService {
-    private final String FIRST_ITEM_EQUALS_CHIPPING_LOCATION =
-        "Unable to set first AnimalVisitedLocation in visitedLocations that equal to chippingLocation of ";
+public class AnimalLocationServiceImpl implements AnimalLocationService {
+    private final AnimalLocationRepository repository;
+    private final AnimalRepository animalRepository;
+    private final LocationRepository locationRepository;
 
-    @Autowired
-    private VisitedLocationRepository repository;
-    @Autowired
-    private AnimalRepository animalRepository;
-    @Autowired
-    private LocationRepository locationRepository;
+    public AnimalLocationServiceImpl(
+        AnimalLocationRepository animalLocationRepository,
+        AnimalRepository animalRepository,
+        LocationRepository locationRepository
+    ) {
+        this.repository = animalLocationRepository;
+        this.animalRepository = animalRepository;
+        this.locationRepository = locationRepository;
+    }
 
     @Override
     public AnimalLocationSchema create(
@@ -70,21 +75,22 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
         if (animalLastPoint == null &&
             point.equals(animal.getChippingLocation())
         ) {
-            throw new IntegrityBreachException(
-                FIRST_ITEM_EQUALS_CHIPPING_LOCATION + animal
-            );
+            throw new IntegrityBreachException("First visited point can't be equal to chippingLocation of " + animal);
         }
 
-        var dbLocation = new AnimalVisitedLocation(
+        var animalLocation = new AnimalLocation(
             animal, point, OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS)
         );
 
-        return AnimalLocationSchema.createFromModel(repository.save(dbLocation));
+        return new AnimalLocationSchema(repository.save(animalLocation));
     }
 
     @Override
     public List<AnimalLocationSchema> search(
-        Long animalId, OffsetDateTime start, OffsetDateTime end, int from, int size
+        Long animalId,
+        @Nullable OffsetDateTime start,
+        @Nullable OffsetDateTime end,
+        int from, int size
     ) throws NotFoundException {
         if (!animalRepository.existsById(animalId)) {
             throw new NotFoundException(
@@ -92,17 +98,18 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
             );
         }
 
-        return repository.search(
-            animalId, start, end, new OffsetPageable(size, from, Sort.by("visitedAt", "id").ascending())
+        return
+            repository.search(
+                animalId, start, end, new OffsetPageable(size, from, Sort.by("visitedAt", "id").ascending())
             )
             .stream()
-            .map(AnimalLocationSchema::createFromModel)
+            .map(AnimalLocationSchema::new)
             .toList();
     }
 
     @Override
     public AnimalLocationSchema update(
-        Long animalId, AnimalLocationUpdateSchema location
+        Long animalId, AnimalLocationUpdateSchema schema
     ) throws NotFoundException, IntegrityBreachException {
         var animal = animalRepository.findById(animalId).orElse(null);
         if (animal == null) {
@@ -111,42 +118,40 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
             );
         }
 
-        var visitedLocation = repository.findById(
-            location.getVisitedLocationPointId()
-        ).orElse(null);
-        if (visitedLocation == null) {
+        var animalLocation = repository.findById(schema.getVisitedLocationPointId()).orElse(null);
+        if (animalLocation == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(
-                    AnimalVisitedLocation.class, location.getVisitedLocationPointId()
+                    AnimalLocation.class, schema.getVisitedLocationPointId()
                 )
             );
         }
 
         var animalVisitedLocations = repository.getSortedAnimalPoints(animalId);
 
-        var locationIndex = animalVisitedLocations.indexOf(visitedLocation);
+        var locationIndex = animalVisitedLocations.indexOf(animalLocation);
         if (locationIndex < 0) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatDoesNotContainError(animal, visitedLocation, "visitedLocations")
+                ErrorDetailsFormatter.formatDoesNotContainError(animal, animalLocation, "visitedLocations")
             );
         }
 
-        var point = locationRepository.findById(location.getLocationPointId()).orElse(null);
+        var point = locationRepository.findById(schema.getLocationPointId()).orElse(null);
         if (point == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(
-                    Location.class, location.getLocationPointId()
+                    Location.class, schema.getLocationPointId()
                 )
             );
         }
 
         if (locationIndex == 0 && point.equals(animal.getChippingLocation())) {
-            throw new IntegrityBreachException(FIRST_ITEM_EQUALS_CHIPPING_LOCATION + animal);
+            throw new IntegrityBreachException("First visited point can't be equal to chippingLocation of " + animal);
         }
 
-        if (point.equals(animalVisitedLocations.get(locationIndex).getVisitedLocation())) {
+        if (point.equals(animalLocation.getVisitedLocation())) {
             throw new IntegrityBreachException(
-                ErrorDetailsFormatter.formatAlreadyContainsError(animal, visitedLocation, "visitedLocations")
+                ErrorDetailsFormatter.formatAlreadyContainsError(animal, animalLocation, "visitedLocations")
             );
         }
 
@@ -166,9 +171,9 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
             );
         }
 
-        visitedLocation.setVisitedLocation(point);
+        animalLocation.setVisitedLocation(point);
 
-        return AnimalLocationSchema.createFromModel(repository.save(visitedLocation));
+        return new AnimalLocationSchema(repository.save(animalLocation));
     }
 
     @Override
@@ -183,7 +188,7 @@ public class VisitedLocationServiceImpl implements VisitedLocationService {
         var visitedLocation = repository.findById(locationId).orElse(null);
         if (visitedLocation == null) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatNotFoundError(AnimalVisitedLocation.class, locationId)
+                ErrorDetailsFormatter.formatNotFoundError(AnimalLocation.class, locationId)
             );
         }
 
