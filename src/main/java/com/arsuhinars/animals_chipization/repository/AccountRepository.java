@@ -1,6 +1,7 @@
 package com.arsuhinars.animals_chipization.repository;
 
 import com.arsuhinars.animals_chipization.model.Account;
+import jakarta.annotation.Nullable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -21,8 +22,14 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
             ORDER BY accounts.id ASC
             LIMIT ?4
             OFFSET ?5
-            """,
+        """,
         nativeQuery = true
     )
-    List<Account> search(String firstName, String lastName, String email, int limit, int offset);
+    List<Account> search(
+        @Nullable String firstName,
+        @Nullable String lastName,
+        @Nullable String email,
+        int limit,
+        int offset
+    );
 }
