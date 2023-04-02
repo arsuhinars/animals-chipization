@@ -23,9 +23,11 @@ public class Location {
     private Long id;
 
     @NonNull
+    @Column(nullable = false)
     private Double latitude;
 
     @NonNull
+    @Column(nullable = false)
     private Double longitude;
 
     @OneToMany(mappedBy = "chippingLocation")
@@ -34,5 +36,5 @@ public class Location {
 
     @OneToMany(mappedBy = "visitedLocation")
     @ToString.Exclude
-    private Set<AnimalVisitedLocation> visitedAnimals;
+    private Set<AnimalLocation> visitedAnimals;
 }

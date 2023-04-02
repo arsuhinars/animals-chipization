@@ -22,6 +22,7 @@ public class AnimalType {
     private Long id;
 
     @NonNull
+    @Column(nullable = false)
     private String type;
 
     @ManyToMany(mappedBy = "types")

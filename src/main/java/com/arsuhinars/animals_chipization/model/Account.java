@@ -24,16 +24,20 @@ public class Account {
     private Long id;
 
     @NonNull
+    @Column(nullable = false)
     private String firstName;
 
     @NonNull
+    @Column(nullable = false)
     private String lastName;
 
     @NonNull
+    @Column(nullable = false, unique = true)
     @ToString.Include
     private String email;
 
     @NonNull
+    @Column(nullable = false)
     private String hashedPassword;
 
     @OneToMany(mappedBy = "chipper", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })

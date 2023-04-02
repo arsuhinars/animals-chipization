@@ -38,22 +38,28 @@ public class Animal {
     private Set<AnimalType> types;
 
     @NonNull
+    @Column(nullable = false)
     private Float weight;
 
     @NonNull
+    @Column(nullable = false)
     private Float length;
 
     @NonNull
+    @Column(nullable = false)
     private Float height;
 
     @NonNull
     @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
     private Gender gender;
 
     @NonNull
+    @Column(nullable = false)
     private LifeStatus lifeStatus;
 
     @NonNull
+    @Column(nullable = false)
     private OffsetDateTime chippingDateTime;
 
     @NonNull
@@ -73,7 +79,7 @@ public class Animal {
         cascade = { CascadeType.MERGE, CascadeType.PERSIST },
         orphanRemoval = true
     )
-    private Set<AnimalVisitedLocation> visitedLocations;
+    private Set<AnimalLocation> visitedLocations;
 
     private OffsetDateTime deathDateTime;
 }
