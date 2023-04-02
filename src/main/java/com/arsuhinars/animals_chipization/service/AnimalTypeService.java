@@ -3,14 +3,16 @@ package com.arsuhinars.animals_chipization.service;
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
-import com.arsuhinars.animals_chipization.schema.animal.type.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.schema.AnimalTypeSchema;
+
+import java.util.Optional;
 
 public interface AnimalTypeService {
-    AnimalTypeSchema create(AnimalTypeSchema animalType) throws AlreadyExistException;
+    AnimalTypeSchema create(AnimalTypeSchema schema) throws AlreadyExistException;
 
-    AnimalTypeSchema getById(Long id);
+    Optional<AnimalTypeSchema> getById(Long id);
 
-    AnimalTypeSchema update(Long id, AnimalTypeSchema animalType) throws NotFoundException, AlreadyExistException;
+    AnimalTypeSchema update(Long id, AnimalTypeSchema schema) throws NotFoundException, AlreadyExistException;
 
     void delete(Long id) throws NotFoundException, DependsOnException;
 }

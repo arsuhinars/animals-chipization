@@ -6,73 +6,75 @@ import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.Animal;
 import com.arsuhinars.animals_chipization.model.AnimalType;
 import com.arsuhinars.animals_chipization.repository.AnimalTypeRepository;
-import com.arsuhinars.animals_chipization.schema.animal.type.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.schema.AnimalTypeSchema;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AnimalTypeServiceImpl implements AnimalTypeService {
-    @Autowired
-    private AnimalTypeRepository repository;
+    private final AnimalTypeRepository repository;
+
+    public AnimalTypeServiceImpl(AnimalTypeRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
-    public AnimalTypeSchema create(AnimalTypeSchema animalType) throws AlreadyExistException {
-        if (repository.existsByType(animalType.getType())) {
+    public AnimalTypeSchema create(AnimalTypeSchema schema) throws AlreadyExistException {
+        if (repository.existsByType(schema.getType())) {
             throw new AlreadyExistException(
-                ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", animalType.getType())
+                ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", schema.getType())
             );
         }
 
-        var dbAnimalType = new AnimalType(animalType.getType());
+        var animalType = new AnimalType(schema.getType());
 
-        return AnimalTypeSchema.createFromModel(repository.save(dbAnimalType));
+        return new AnimalTypeSchema(repository.save(animalType));
     }
 
     @Override
-    public AnimalTypeSchema getById(Long id) {
-        return repository.findById(id).map(AnimalTypeSchema::createFromModel).orElse(null);
+    public Optional<AnimalTypeSchema> getById(Long id) {
+        return repository.findById(id).map(AnimalTypeSchema::new);
     }
 
     @Override
-    public AnimalTypeSchema update(
-        Long id, AnimalTypeSchema animalType
-    ) throws NotFoundException, AlreadyExistException {
-        var dbAnimalType = repository.findById(id).orElse(null);
-        if (dbAnimalType == null) {
+    public AnimalTypeSchema update(Long id, AnimalTypeSchema schema) throws NotFoundException, AlreadyExistException {
+        var animalType = repository.findById(id).orElse(null);
+        if (animalType == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(AnimalType.class, id)
             );
         }
 
-        if (!dbAnimalType.getType().equals(animalType.getType()) &&
-            repository.existsByType(animalType.getType())
+        if (!animalType.getType().equals(schema.getType()) &&
+            repository.existsByType(schema.getType())
         ) {
             throw new AlreadyExistException(
-                ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", animalType.getType())
+                ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", schema.getType())
             );
         }
 
-        dbAnimalType.setType(animalType.getType());
+        animalType.setType(schema.getType());
 
-        return AnimalTypeSchema.createFromModel(repository.save(dbAnimalType));
+        return new AnimalTypeSchema(repository.save(animalType));
     }
 
     @Override
     public void delete(Long id) throws NotFoundException, DependsOnException {
-        var dbAnimalType = repository.findById(id).orElse(null);
-        if (dbAnimalType == null) {
+        var animalType = repository.findById(id).orElse(null);
+        if (animalType == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(AnimalType.class, id)
             );
         }
 
-        if (!dbAnimalType.getAnimals().isEmpty()) {
+        if (!animalType.getAnimals().isEmpty()) {
             throw new DependsOnException(
-                ErrorDetailsFormatter.formatDependsOnError(dbAnimalType, Animal.class)
+                ErrorDetailsFormatter.formatDependsOnError(animalType, Animal.class)
             );
         }
 
-        repository.delete(dbAnimalType);
+        repository.delete(animalType);
     }
 }
