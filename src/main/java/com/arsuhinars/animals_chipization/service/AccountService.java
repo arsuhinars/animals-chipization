@@ -6,19 +6,26 @@ import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.schema.account.AccountCreateSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountUpdateSchema;
+import jakarta.annotation.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AccountService {
-    AccountSchema create(AccountCreateSchema account) throws AlreadyExistException;
+    AccountSchema create(AccountCreateSchema schema) throws AlreadyExistException;
 
-    AccountSchema getById(Long id);
+    Optional<AccountSchema> getById(Long id);
 
-    AccountSchema getByEmail(String email);
+    Optional<AccountSchema> getByEmail(String email);
 
-    List<AccountSchema> search(String firstName, String lastName, String email, int from, int count);
+    List<AccountSchema> search(
+        @Nullable String firstName,
+        @Nullable String lastName,
+        @Nullable String email,
+        int from, int count
+    );
 
-    AccountSchema update(Long id, AccountUpdateSchema account) throws NotFoundException, AlreadyExistException;
+    AccountSchema update(Long id, AccountUpdateSchema schema) throws NotFoundException, AlreadyExistException;
 
     void delete(Long id) throws NotFoundException, DependsOnException;
 }

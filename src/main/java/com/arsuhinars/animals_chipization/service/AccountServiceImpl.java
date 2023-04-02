@@ -10,82 +10,90 @@ import com.arsuhinars.animals_chipization.schema.account.AccountCreateSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountUpdateSchema;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
-    @Autowired
-    private AccountRepository repository;
+    private final AccountRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AccountServiceImpl(AccountRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
-    public AccountSchema create(AccountCreateSchema account) throws AlreadyExistException {
-        if (repository.existsByEmail(account.getEmail())) {
+    public AccountSchema create(AccountCreateSchema schema) throws AlreadyExistException {
+        if (repository.existsByEmail(schema.getEmail())) {
             throw new AlreadyExistException(
-                ErrorDetailsFormatter.formatAlreadyExistsError(Account.class, "email", account.getEmail())
+                ErrorDetailsFormatter.formatAlreadyExistsError(Account.class, "email", schema.getEmail())
             );
         }
 
-        var dbAccount = new Account(
-            account.getFirstName(),
-            account.getLastName(),
-            account.getEmail(),
-            passwordEncoder.encode(account.getPassword())
+        var account = new Account(
+            schema.getFirstName(),
+            schema.getLastName(),
+            schema.getEmail(),
+            passwordEncoder.encode(schema.getPassword())
         );
 
-        return AccountSchema.createFromModel(
-            repository.save(dbAccount)
-        );
+        return new AccountSchema(repository.save(account));
     }
 
     @Override
-    public AccountSchema getById(Long id) {
-        return repository.findById(id).map(AccountSchema::createFromModel).orElse(null);
+    public Optional<AccountSchema> getById(Long id) {
+        return repository.findById(id).map(AccountSchema::new);
     }
 
     @Override
-    public AccountSchema getByEmail(String email) {
-        return repository.findByEmail(email).map(AccountSchema::createFromModel).orElse(null);
+    public Optional<AccountSchema> getByEmail(String email) {
+        return repository.findByEmail(email).map(AccountSchema::new);
     }
 
     @Override
-    public List<AccountSchema> search(String firstName, String lastName, String email, int from, int count) {
-        return repository.search(firstName, lastName, email, count, from)
+    public List<AccountSchema> search(
+        @Nullable String firstName,
+        @Nullable String lastName,
+        @Nullable String email,
+        int from, int count
+    ) {
+        return
+            repository.search(firstName, lastName, email, count, from)
             .stream()
-            .map(AccountSchema::createFromModel)
+            .map(AccountSchema::new)
             .toList();
     }
 
     @Override
-    public AccountSchema update(Long id, AccountUpdateSchema account) throws NotFoundException, AlreadyExistException {
-        var dbAccount = repository.findById(id).orElse(null);
-        if (dbAccount == null) {
+    public AccountSchema update(Long id, AccountUpdateSchema schema) throws NotFoundException, AlreadyExistException {
+        var account = repository.findById(id).orElse(null);
+        if (account == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Account.class, id)
             );
         }
 
-        if (!dbAccount.getEmail().equals(account.getEmail()) &&
-            repository.existsByEmail(account.getEmail())) {
+        if (!account.getEmail().equals(schema.getEmail()) &&
+            repository.existsByEmail(schema.getEmail())
+        ) {
             throw new AlreadyExistException(
-                ErrorDetailsFormatter.formatAlreadyExistsError(Account.class, "email", account.getEmail())
+                ErrorDetailsFormatter.formatAlreadyExistsError(Account.class, "email", schema.getEmail())
             );
         }
 
-        dbAccount.setFirstName(account.getFirstName());
-        dbAccount.setLastName(account.getLastName());
-        dbAccount.setEmail(account.getEmail());
-        dbAccount.setHashedPassword(
-            passwordEncoder.encode(account.getPassword())
+        account.setFirstName(schema.getFirstName());
+        account.setLastName(schema.getLastName());
+        account.setEmail(schema.getEmail());
+        account.setHashedPassword(
+            passwordEncoder.encode(schema.getPassword())
         );
 
-        return AccountSchema.createFromModel(repository.save(dbAccount));
+        return new AccountSchema(repository.save(account));
     }
 
     @Override
