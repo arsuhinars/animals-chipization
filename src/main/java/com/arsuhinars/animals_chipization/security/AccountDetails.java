@@ -1,10 +1,8 @@
 package com.arsuhinars.animals_chipization.security;
 
 import com.arsuhinars.animals_chipization.model.Account;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.Setter;
+import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-@Data
+@AllArgsConstructor
 public class AccountDetails implements UserDetails {
-    @NonNull
-    @Setter(AccessLevel.PRIVATE)
-    private Account account;
+    @Getter
+    private AccountSchema account;
+    private String hashedPassword;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -25,7 +23,7 @@ public class AccountDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return account.getHashedPassword();
+        return hashedPassword;
     }
 
     @Override
