@@ -12,7 +12,6 @@ import com.arsuhinars.animals_chipization.service.AnimalService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,19 +23,22 @@ import java.util.List;
 @RequestMapping("/animals")
 @Validated
 public class AnimalController {
-    @Autowired
-    private AnimalService service;
+    private final AnimalService service;
+
+    public AnimalController(AnimalService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{id}")
     public AnimalSchema getAnimalById(@PathVariable @Min(1) Long id) throws NotFoundException {
         var animal = service.getById(id);
-        if (animal == null) {
+        if (animal.isEmpty()) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Animal.class, id)
             );
         }
 
-        return animal;
+        return animal.get();
     }
 
     @GetMapping("/search")

@@ -11,7 +11,6 @@ import com.arsuhinars.animals_chipization.service.AccountService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,19 +22,22 @@ import java.util.Objects;
 @RequestMapping("/accounts")
 @Validated
 public class AccountController {
-    @Autowired
-    private AccountService service;
+    private final AccountService service;
+
+    public AccountController(AccountService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{id}")
     public AccountSchema getAccountById(@PathVariable @Min(1) Long id) throws NotFoundException {
         var account = service.getById(id);
-        if (account == null) {
+        if (account.isEmpty()) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Account.class, id)
             );
         }
 
-        return account;
+        return account.get();
     }
 
     @GetMapping("/search")

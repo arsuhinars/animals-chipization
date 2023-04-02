@@ -2,12 +2,11 @@ package com.arsuhinars.animals_chipization.controller;
 
 import com.arsuhinars.animals_chipization.exception.IntegrityBreachException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
-import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationSchema;
-import com.arsuhinars.animals_chipization.schema.animal.location.AnimalLocationUpdateSchema;
-import com.arsuhinars.animals_chipization.service.VisitedLocationService;
+import com.arsuhinars.animals_chipization.schema.animal_location.AnimalLocationSchema;
+import com.arsuhinars.animals_chipization.schema.animal_location.AnimalLocationUpdateSchema;
+import com.arsuhinars.animals_chipization.service.AnimalLocationService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +18,11 @@ import java.util.List;
 @RequestMapping("/animals")
 @Validated
 public class AnimalLocationController {
-    @Autowired
-    private VisitedLocationService service;
+    private final AnimalLocationService service;
+
+    public AnimalLocationController(AnimalLocationService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{animalId}/locations")
     public List<AnimalLocationSchema> getAnimalLocations(

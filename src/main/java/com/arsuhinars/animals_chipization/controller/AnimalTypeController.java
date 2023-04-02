@@ -4,12 +4,11 @@ import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.AnimalType;
-import com.arsuhinars.animals_chipization.schema.animal.type.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.schema.AnimalTypeSchema;
 import com.arsuhinars.animals_chipization.service.AnimalTypeService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,21 +17,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/animals/types")
 @Validated
 public class AnimalTypeController {
-    @Autowired
-    private AnimalTypeService service;
+    private final AnimalTypeService service;
+
+    public AnimalTypeController(AnimalTypeService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{id}")
     public AnimalTypeSchema getAnimalTypeById(
         @PathVariable @Min(1) Long id
     ) throws NotFoundException {
         var animalType = service.getById(id);
-        if (animalType == null) {
+        if (animalType.isEmpty()) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(AnimalType.class, id)
             );
         }
 
-        return animalType;
+        return animalType.get();
     }
 
     @PostMapping
