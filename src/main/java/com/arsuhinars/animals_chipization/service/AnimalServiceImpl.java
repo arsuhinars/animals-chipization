@@ -10,6 +10,7 @@ import com.arsuhinars.animals_chipization.schema.animal.AnimalSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalUpdateSchema;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import com.arsuhinars.animals_chipization.util.OffsetPageable;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,41 +18,49 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class AnimalServiceImpl implements AnimalService {
-    @Autowired
-    private AnimalRepository repository;
-    @Autowired
-    private AnimalTypeRepository animalTypeRepository;
-    @Autowired
-    private AccountRepository accountRepository;
-    @Autowired
-    private LocationRepository locationRepository;
-    @Autowired
-    private VisitedLocationRepository visitedLocationRepository;
+    private final AnimalRepository repository;
+    private final AnimalTypeRepository animalTypeRepository;
+    private final AnimalLocationRepository animalLocationRepository;
+    private final AccountRepository accountRepository;
+    private final LocationRepository locationRepository;
+
+    public AnimalServiceImpl(
+        AnimalRepository animalRepository,
+        AnimalTypeRepository animalTypeRepository,
+        AnimalLocationRepository animalLocationRepository,
+        AccountRepository accountRepository,
+        LocationRepository locationRepository
+    ) {
+        this.repository = animalRepository;
+        this.animalTypeRepository = animalTypeRepository;
+        this.animalLocationRepository = animalLocationRepository;
+        this.accountRepository = accountRepository;
+        this.locationRepository = locationRepository;
+    }
 
     @Override
-    public AnimalSchema create(AnimalCreateSchema animal) throws NotFoundException, AlreadyExistException {
-        var chipper = accountRepository.findById(animal.getChipperId()).orElse(null);
+    public AnimalSchema create(AnimalCreateSchema schema) throws NotFoundException, AlreadyExistException {
+        var chipper = accountRepository.findById(schema.getChipperId()).orElse(null);
         if (chipper == null) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatNotFoundError(Account.class, animal.getChipperId())
+                ErrorDetailsFormatter.formatNotFoundError(Account.class, schema.getChipperId())
             );
         }
 
-        var chippingLocation = locationRepository.findById(
-            animal.getChippingLocationId()
-        ).orElse(null);
+        var chippingLocation = locationRepository.findById(schema.getChippingLocationId()).orElse(null);
         if (chippingLocation == null) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatNotFoundError(Location.class, animal.getChippingLocationId())
+                ErrorDetailsFormatter.formatNotFoundError(Location.class, schema.getChippingLocationId())
             );
         }
 
         var animalTypes = new HashSet<AnimalType>();
-        for (var animalTypeId : animal.getAnimalTypes()) {
+        for (var animalTypeId : schema.getAnimalTypes()) {
             var animalType = animalTypeRepository.findById(animalTypeId).orElse(null);
             if (animalType == null) {
                 throw new NotFoundException(
@@ -61,12 +70,12 @@ public class AnimalServiceImpl implements AnimalService {
             animalTypes.add(animalType);
         }
 
-        var dbAnimal = new Animal(
+        var animal = new Animal(
             animalTypes,
-            animal.getWeight(),
-            animal.getLength(),
-            animal.getHeight(),
-            animal.getGender(),
+            schema.getWeight(),
+            schema.getLength(),
+            schema.getHeight(),
+            schema.getGender(),
             LifeStatus.ALIVE,
             OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS),
             chipper,
@@ -74,113 +83,113 @@ public class AnimalServiceImpl implements AnimalService {
             Set.of()
         );
 
-        return AnimalSchema.createFromModel(repository.save(dbAnimal));
+        return new AnimalSchema(repository.save(animal));
     }
 
     @Override
-    public AnimalSchema getById(Long id) {
-        return repository.findById(id).map(AnimalSchema::createFromModel).orElse(null);
+    public Optional<AnimalSchema> getById(Long id) {
+        return repository.findById(id).map(AnimalSchema::new);
     }
 
     @Override
     public List<AnimalSchema> search(
-        OffsetDateTime start,
-        OffsetDateTime end,
-        Long chipperId,
-        Long chippingLocationId,
-        LifeStatus lifeStatus,
-        Gender gender,
+        @Nullable OffsetDateTime start,
+        @Nullable OffsetDateTime end,
+        @Nullable Long chipperId,
+        @Nullable Long chippingLocationId,
+        @Nullable LifeStatus lifeStatus,
+        @Nullable Gender gender,
         int from, int size
     ) {
-        return repository.search(
-            start, end, chipperId, chippingLocationId, lifeStatus, gender, new OffsetPageable(size, from)
+        return
+            repository.search(
+                start, end, chipperId, chippingLocationId, lifeStatus, gender, new OffsetPageable(size, from)
             ).stream()
-            .map(AnimalSchema::createFromModel)
+            .map(AnimalSchema::new)
             .toList();
     }
 
     @Override
-    public AnimalSchema update(Long id, AnimalUpdateSchema animal) throws NotFoundException, IntegrityBreachException {
-        var dbAnimal = repository.findById(id).orElse(null);
-        if (dbAnimal == null) {
+    public AnimalSchema update(Long id, AnimalUpdateSchema schema) throws NotFoundException, IntegrityBreachException {
+        var animal = repository.findById(id).orElse(null);
+        if (animal == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Animal.class, id)
             );
         }
 
-        if (dbAnimal.getLifeStatus() == LifeStatus.DEAD &&
-            animal.getLifeStatus() == LifeStatus.ALIVE) {
+        if (animal.getLifeStatus() == LifeStatus.DEAD &&
+            schema.getLifeStatus() == LifeStatus.ALIVE
+        ) {
             throw new IntegrityBreachException(
-                "Unable to change lifeStatus from DEAD to ALIVE on " + dbAnimal
+                "Unable to change lifeStatus from DEAD to ALIVE on " + animal
             );
         }
 
-        var chipper = accountRepository.findById(animal.getChipperId()).orElse(null);
+        var chipper = accountRepository.findById(schema.getChipperId()).orElse(null);
         if (chipper == null) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatNotFoundError(Account.class, animal.getChipperId())
+                ErrorDetailsFormatter.formatNotFoundError(Account.class, schema.getChipperId())
             );
         }
 
-        var chippingLocation = locationRepository.findById(
-            animal.getChippingLocationId()
-        ).orElse(null);
+        var chippingLocation = locationRepository.findById(schema.getChippingLocationId()).orElse(null);
         if (chippingLocation == null) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatNotFoundError(Location.class, animal.getChippingLocationId())
+                ErrorDetailsFormatter.formatNotFoundError(Location.class, schema.getChippingLocationId())
             );
         }
 
-        var animalFirstPoint = visitedLocationRepository.getAnimalFirstPoint(id).orElse(null);
+        var animalFirstPoint = animalLocationRepository.getAnimalFirstPoint(id).orElse(null);
         if (animalFirstPoint != null &&
             chippingLocation.equals(animalFirstPoint.getVisitedLocation())
         ) {
             throw new IntegrityBreachException(
-                "Unable to change chippingLocation to first visited point on " + dbAnimal
+                "Unable to change chippingLocation to first visited point on " + animal
             );
         }
 
-        dbAnimal.setWeight(animal.getWeight());
-        dbAnimal.setLength(animal.getLength());
-        dbAnimal.setHeight(animal.getHeight());
-        dbAnimal.setGender(animal.getGender());
-        dbAnimal.setChipper(chipper);
-        dbAnimal.setChippingLocation(chippingLocation);
+        animal.setWeight(schema.getWeight());
+        animal.setLength(schema.getLength());
+        animal.setHeight(schema.getHeight());
+        animal.setGender(schema.getGender());
+        animal.setChipper(chipper);
+        animal.setChippingLocation(chippingLocation);
 
-        if (dbAnimal.getLifeStatus() == LifeStatus.ALIVE &&
-            animal.getLifeStatus() == LifeStatus.DEAD
+        if (animal.getLifeStatus() == LifeStatus.ALIVE &&
+            schema.getLifeStatus() == LifeStatus.DEAD
         ) {
-            dbAnimal.setLifeStatus(LifeStatus.DEAD);
-            dbAnimal.setDeathDateTime(OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+            animal.setLifeStatus(LifeStatus.DEAD);
+            animal.setDeathDateTime(OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         }
 
-        return AnimalSchema.createFromModel(repository.save(dbAnimal));
+        return new AnimalSchema(repository.save(animal));
     }
 
     @Override
     public void delete(Long id) throws NotFoundException, DependsOnException {
-        var dbAnimal = repository.findById(id).orElse(null);
-        if (dbAnimal == null) {
+        var animal = repository.findById(id).orElse(null);
+        if (animal == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Animal.class, id)
             );
         }
 
-        if (!dbAnimal.getVisitedLocations().isEmpty()) {
+        if (!animal.getVisitedLocations().isEmpty()) {
             throw new DependsOnException(
-                ErrorDetailsFormatter.formatDependsOnError(dbAnimal, AnimalVisitedLocation.class)
+                ErrorDetailsFormatter.formatDependsOnError(animal, AnimalLocation.class)
             );
         }
 
-        dbAnimal.getTypes().clear();
+        animal.getTypes().clear();
 
-        repository.delete(dbAnimal);
+        repository.delete(animal);
     }
 
     @Override
     public AnimalSchema addType(Long animalId, Long typeId) throws NotFoundException, AlreadyExistException {
-        var dbAnimal = repository.findById(animalId).orElse(null);
-        if (dbAnimal == null) {
+        var animal = repository.findById(animalId).orElse(null);
+        if (animal == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Animal.class, animalId)
             );
@@ -193,23 +202,23 @@ public class AnimalServiceImpl implements AnimalService {
             );
         }
 
-        if (dbAnimal.getTypes().contains(animalType)) {
+        if (animal.getTypes().contains(animalType)) {
             throw new AlreadyExistException(
-                ErrorDetailsFormatter.formatAlreadyContainsError(dbAnimal, animalType, "types")
+                ErrorDetailsFormatter.formatAlreadyContainsError(animal, animalType, "types")
             );
         }
 
-        dbAnimal.getTypes().add(animalType);
+        animal.getTypes().add(animalType);
 
-        return AnimalSchema.createFromModel(repository.save(dbAnimal));
+        return new AnimalSchema(repository.save(animal));
     }
 
     @Override
     public AnimalSchema updateType(
         Long animalId, Long oldTypeId, Long newTypeId
     ) throws NotFoundException, AlreadyExistException {
-        var dbAnimal = repository.findById(animalId).orElse(null);
-        if (dbAnimal == null) {
+        var animal = repository.findById(animalId).orElse(null);
+        if (animal == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Animal.class, animalId)
             );
@@ -229,28 +238,28 @@ public class AnimalServiceImpl implements AnimalService {
             );
         }
 
-        if (!dbAnimal.getTypes().contains(oldType)) {
+        if (!animal.getTypes().contains(oldType)) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatDoesNotContainError(dbAnimal, oldType, "types")
+                ErrorDetailsFormatter.formatDoesNotContainError(animal, oldType, "types")
             );
         }
 
-        if (dbAnimal.getTypes().contains(newType)) {
+        if (animal.getTypes().contains(newType)) {
             throw new AlreadyExistException(
-                ErrorDetailsFormatter.formatAlreadyContainsError(dbAnimal, newType, "types")
+                ErrorDetailsFormatter.formatAlreadyContainsError(animal, newType, "types")
             );
         }
 
-        dbAnimal.getTypes().remove(oldType);
-        dbAnimal.getTypes().add(newType);
+        animal.getTypes().remove(oldType);
+        animal.getTypes().add(newType);
 
-        return AnimalSchema.createFromModel(repository.save(dbAnimal));
+        return new AnimalSchema(repository.save(animal));
     }
 
     @Override
     public AnimalSchema deleteType(Long animalId, Long typeId) throws NotFoundException, LastItemException {
-        var dbAnimal = repository.findById(animalId).orElse(null);
-        if (dbAnimal == null) {
+        var animal = repository.findById(animalId).orElse(null);
+        if (animal == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Animal.class, animalId)
             );
@@ -263,20 +272,20 @@ public class AnimalServiceImpl implements AnimalService {
             );
         }
 
-        if (!dbAnimal.getTypes().contains(animalType)) {
+        if (!animal.getTypes().contains(animalType)) {
             throw new NotFoundException(
-                ErrorDetailsFormatter.formatDoesNotContainError(dbAnimal, animalType, "types")
+                ErrorDetailsFormatter.formatDoesNotContainError(animal, animalType, "types")
             );
         }
 
-        if (dbAnimal.getTypes().size() == 1) {
+        if (animal.getTypes().size() == 1) {
             throw new LastItemException(
-                ErrorDetailsFormatter.formatLastItemError(dbAnimal, animalType, "types")
+                ErrorDetailsFormatter.formatLastItemError(animal, animalType, "types")
             );
         }
 
-        dbAnimal.getTypes().remove(animalType);
+        animal.getTypes().remove(animalType);
 
-        return AnimalSchema.createFromModel(repository.save(dbAnimal));
+        return new AnimalSchema(repository.save(animal));
     }
 }
