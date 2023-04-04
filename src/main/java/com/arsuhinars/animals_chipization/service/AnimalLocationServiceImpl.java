@@ -14,7 +14,6 @@ import com.arsuhinars.animals_chipization.schema.animal_location.AnimalLocationU
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import com.arsuhinars.animals_chipization.util.OffsetPageable;
 import jakarta.annotation.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
