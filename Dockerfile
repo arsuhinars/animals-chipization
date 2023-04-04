@@ -15,6 +15,8 @@ RUN ./mvnw clean install
 # Run stage
 FROM eclipse-temurin:17-jre-alpine AS run
 
+RUN apk --no-cache add curl
+
 ENV SPRING_PROFILES_ACTIVE=docker
 
 WORKDIR /backend

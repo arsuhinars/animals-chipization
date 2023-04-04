@@ -9,6 +9,12 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: qwerty12
 
+  backend:
+    entrypoint: [ "java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "/backend/app.jar"]
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+
   tests:
     environment:
       SERVER_URL: http://localhost:$SERVER_PORT

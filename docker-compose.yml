@@ -6,7 +6,8 @@ services:
     image: postgres:15
     healthcheck:
       test: pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
-      interval: 10s
+      interval: 3s
+      retries: 15
       start_period: 5s
     volumes:
       - /var/lib/postgresql/data/
@@ -20,8 +21,13 @@ services:
 
   backend:
     build:
-      dockerfile: .
+      context: .
       target: run
+    healthcheck:
+      test: curl -f http://localhost:8080/status
+      interval: 3s
+      retries: 30
+      start_period: 5s
     ports:
       - "$SERVER_PORT:$SERVER_PORT"
     secrets:
@@ -37,17 +43,18 @@ services:
         condition: service_healthy
 
   tests: 
-    image: mrexpen/planet_olymp_phase1
+    image: mrexpen/planet_olymp_phase2
     pull_policy: always
     ports:
       - "8090:8080"
     environment:
       SERVER_URL: http://backend:$SERVER_PORT
-      STAGE: all
+      STAGE: 0
       # all - запуск всех тестов из трёх доступных этапов
       # 0, 1 или 2 - запуск тестов для соответствующего этапа
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 
 secrets:
