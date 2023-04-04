@@ -11,7 +11,6 @@ import com.arsuhinars.animals_chipization.schema.animal.AnimalUpdateSchema;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import com.arsuhinars.animals_chipization.util.OffsetPageable;
 import jakarta.annotation.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
