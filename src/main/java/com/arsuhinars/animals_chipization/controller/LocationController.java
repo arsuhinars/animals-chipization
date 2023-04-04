@@ -4,7 +4,9 @@ import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.Location;
-import com.arsuhinars.animals_chipization.schema.LocationSchema;
+import com.arsuhinars.animals_chipization.schema.location.LocationCreateSchema;
+import com.arsuhinars.animals_chipization.schema.location.LocationSchema;
+import com.arsuhinars.animals_chipization.schema.location.LocationUpdateSchema;
 import com.arsuhinars.animals_chipization.service.LocationService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
@@ -38,7 +40,7 @@ public class LocationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LocationSchema createLocation(
-        @Valid @RequestBody LocationSchema location
+        @Valid @RequestBody LocationCreateSchema location
     ) throws AlreadyExistException {
         return service.create(location);
     }
@@ -46,7 +48,7 @@ public class LocationController {
     @PutMapping("/{id}")
     public LocationSchema updateLocationById(
         @PathVariable @Min(1) Long id,
-        @Valid @RequestBody LocationSchema location
+        @Valid @RequestBody LocationUpdateSchema location
     ) throws NotFoundException, AlreadyExistException {
         return service.update(id, location);
     }
