@@ -1,18 +1,19 @@
-package com.arsuhinars.animals_chipization.schema;
+package com.arsuhinars.animals_chipization.schema.location;
 
 import com.arsuhinars.animals_chipization.model.Location;
 import com.arsuhinars.animals_chipization.validation.FloatingMax;
 import com.arsuhinars.animals_chipization.validation.FloatingMin;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class LocationSchema {
     @NotNull
     @Min(1)

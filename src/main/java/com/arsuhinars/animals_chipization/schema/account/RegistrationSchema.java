@@ -1,9 +1,7 @@
 package com.arsuhinars.animals_chipization.schema.account;
 
-import com.arsuhinars.animals_chipization.enums.AccountRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountUpdateSchema {
+public class RegistrationSchema {
     @NotBlank
     private String firstName;
 
@@ -26,7 +24,4 @@ public class AccountUpdateSchema {
 
     @NotBlank
     private String password;
-
-    @NotNull
-    private AccountRole role;
 }
