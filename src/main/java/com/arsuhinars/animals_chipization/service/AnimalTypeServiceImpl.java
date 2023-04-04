@@ -6,7 +6,9 @@ import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.Animal;
 import com.arsuhinars.animals_chipization.model.AnimalType;
 import com.arsuhinars.animals_chipization.repository.AnimalTypeRepository;
-import com.arsuhinars.animals_chipization.schema.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.schema.animal_type.AnimalTypeCreateSchema;
+import com.arsuhinars.animals_chipization.schema.animal_type.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.schema.animal_type.AnimalTypeUpdateSchema;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,7 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     }
 
     @Override
-    public AnimalTypeSchema create(AnimalTypeSchema schema) throws AlreadyExistException {
+    public AnimalTypeSchema create(AnimalTypeCreateSchema schema) throws AlreadyExistException {
         if (repository.existsByType(schema.getType())) {
             throw new AlreadyExistException(
                 ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", schema.getType())
@@ -39,7 +41,7 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     }
 
     @Override
-    public AnimalTypeSchema update(Long id, AnimalTypeSchema schema) throws NotFoundException, AlreadyExistException {
+    public AnimalTypeSchema update(Long id, AnimalTypeUpdateSchema schema) throws NotFoundException, AlreadyExistException {
         var animalType = repository.findById(id).orElse(null);
         if (animalType == null) {
             throw new NotFoundException(
