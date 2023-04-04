@@ -1,24 +1,30 @@
 package com.arsuhinars.animals_chipization.security;
 
-import com.arsuhinars.animals_chipization.model.Account;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
-@AllArgsConstructor
 public class AccountDetails implements UserDetails {
     @Getter
-    private AccountSchema account;
-    private String hashedPassword;
+    private final AccountSchema account;
+    private final String hashedPassword;
+    private final Collection<AccountRoleAuthority> authorities;
+
+    public AccountDetails(AccountSchema account, String hashedPassword) {
+        this.account = account;
+        this.hashedPassword = hashedPassword;
+        this.authorities = Collections.singleton(
+            new AccountRoleAuthority(account.getRole())
+        );
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+        return authorities;
     }
 
     @Override

@@ -39,7 +39,8 @@ public class AccountServiceImpl implements AccountService {
             schema.getFirstName(),
             schema.getLastName(),
             schema.getEmail(),
-            passwordEncoder.encode(schema.getPassword())
+            passwordEncoder.encode(schema.getPassword()),
+            schema.getRole()
         );
 
         return new AccountSchema(repository.save(account));
@@ -92,6 +93,7 @@ public class AccountServiceImpl implements AccountService {
         account.setHashedPassword(
             passwordEncoder.encode(schema.getPassword())
         );
+        account.setRole(schema.getRole());
 
         return new AccountSchema(repository.save(account));
     }

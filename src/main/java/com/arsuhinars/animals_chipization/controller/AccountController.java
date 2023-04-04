@@ -1,9 +1,11 @@
 package com.arsuhinars.animals_chipization.controller;
 
+import com.arsuhinars.animals_chipization.enums.AccountRole;
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.ForbiddenException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.Account;
+import com.arsuhinars.animals_chipization.schema.account.AccountCreateSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountUpdateSchema;
 import com.arsuhinars.animals_chipization.security.AccountDetails;
@@ -11,12 +13,12 @@ import com.arsuhinars.animals_chipization.service.AccountService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/accounts")
@@ -29,15 +31,22 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public AccountSchema getAccountById(@PathVariable @Min(1) Long id) throws NotFoundException {
-        var account = service.getById(id);
-        if (account.isEmpty()) {
+    public AccountSchema getAccountById(
+        @PathVariable @Min(1) Long id,
+        Authentication authentication
+    ) throws NotFoundException {
+        if (!hasAccessToAccount(authentication, id)) {
+            throw new ForbiddenException();
+        }
+
+        var schema = service.getById(id);
+        if (schema.isEmpty()) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Account.class, id)
             );
         }
 
-        return account.get();
+        return schema.get();
     }
 
     @GetMapping("/search")
@@ -51,19 +60,25 @@ public class AccountController {
         return service.search(firstName, lastName, email, from, size);
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountSchema createAccount(
+        @Valid @RequestBody AccountCreateSchema schema
+    ) throws AlreadyExistException {
+        return service.create(schema);
+    }
+
     @PutMapping("/{id}")
     public AccountSchema updateAccountById(
         @PathVariable @Min(1) Long id,
-        @Valid @RequestBody AccountUpdateSchema account,
+        @Valid @RequestBody AccountUpdateSchema schema,
         Authentication authentication
     ) throws AlreadyExistException, ForbiddenException {
-        var details = (AccountDetails)authentication.getPrincipal();
-
-        if (!Objects.equals(details.getAccount().getId(), id)) {
+        if (!hasAccessToAccount(authentication, id)) {
             throw new ForbiddenException();
         }
 
-        return service.update(id, account);
+        return service.update(id, schema);
     }
 
     @DeleteMapping("/{id}")
@@ -71,12 +86,17 @@ public class AccountController {
         @PathVariable @Min(1) Long id,
         Authentication authentication
     ) {
-        var details = (AccountDetails)authentication.getPrincipal();
-
-        if (!Objects.equals(details.getAccount().getId(), id)) {
+        if (!hasAccessToAccount(authentication, id)) {
             throw new ForbiddenException();
         }
 
         service.delete(id);
+    }
+
+    private boolean hasAccessToAccount(Authentication auth, Long accountId) {
+        var details = (AccountDetails)auth.getPrincipal();
+        var account = details.getAccount();
+
+        return account.getRole() == AccountRole.ADMIN || account.getId().equals(accountId);
     }
 }
