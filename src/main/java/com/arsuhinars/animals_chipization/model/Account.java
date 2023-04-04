@@ -1,5 +1,6 @@
 package com.arsuhinars.animals_chipization.model;
 
+import com.arsuhinars.animals_chipization.enums.AccountRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +40,11 @@ public class Account {
     @NonNull
     @Column(nullable = false)
     private String hashedPassword;
+
+    @NonNull
+    @Column(nullable = false)
+    @Enumerated
+    private AccountRole role;
 
     @OneToMany(mappedBy = "chipper", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<Animal> chippedAnimals;
