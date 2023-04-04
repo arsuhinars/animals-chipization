@@ -21,8 +21,8 @@ public interface AnimalRepository extends CrudRepository<Animal, Long> {
 
     @Query("""
         SELECT a FROM Animal a WHERE (
-            (CAST(?1 AS DATE) IS NULL OR CAST(?1 AS DATE) >= a.chippingDateTime) AND
-            (CAST(?2 AS DATE) IS NULL OR CAST(?2 AS DATE) <= a.chippingDateTime) AND
+            (CAST(?1 AS TIMESTAMP) IS NULL OR a.chippingDateTime >= CAST(?1 AS TIMESTAMP)) AND
+            (CAST(?2 AS TIMESTAMP) IS NULL OR a.chippingDateTime <= CAST(?2 AS TIMESTAMP)) AND
             (?3 IS NULL OR ?3 = a.chipper.id) AND
             (?4 IS NULL OR ?4 = a.chippingLocation.id) AND
             (?5 IS NULL OR ?5 = a.lifeStatus) AND
