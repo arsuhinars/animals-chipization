@@ -2,9 +2,8 @@ package com.arsuhinars.animals_chipization.exception.handler;
 
 import com.arsuhinars.animals_chipization.exception.AppException;
 import jakarta.validation.ValidationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,5 +22,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @RequestMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> handleValidationException(ValidationException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(
+        Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request
+    ) {
+        var details = ex.getMessage();
+
+        if (body instanceof ProblemDetail) {
+            details = ((ProblemDetail)body).getDetail();
+        }
+
+        return new ResponseEntity<>(details, statusCode);
     }
 }
