@@ -3,6 +3,7 @@ package com.arsuhinars.animals_chipization.controller;
 import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.schema.account.AccountCreateSchema;
 import com.arsuhinars.animals_chipization.schema.account.AccountSchema;
+import com.arsuhinars.animals_chipization.schema.account.RegistrationSchema;
 import com.arsuhinars.animals_chipization.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,8 @@ public class AuthenticationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AccountSchema registerAccount(
-        @Valid @RequestBody AccountCreateSchema account
+        @Valid @RequestBody RegistrationSchema account
     ) throws AlreadyExistException {
-        return service.create(account);
+        return service.create(new AccountCreateSchema(account));
     }
 }
