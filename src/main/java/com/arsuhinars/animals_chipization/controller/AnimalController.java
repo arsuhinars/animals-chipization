@@ -6,7 +6,7 @@ import com.arsuhinars.animals_chipization.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.model.Animal;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalCreateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalSchema;
-import com.arsuhinars.animals_chipization.schema.animal.AnimalTypeUpdateSchema;
+import com.arsuhinars.animals_chipization.schema.animal.AnimalChangeUpdateSchema;
 import com.arsuhinars.animals_chipization.schema.animal.AnimalUpdateSchema;
 import com.arsuhinars.animals_chipization.service.AnimalService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
@@ -97,7 +97,7 @@ public class AnimalController {
     @PutMapping("/{id}/types")
     public AnimalSchema updateAnimalType(
         @PathVariable @Min(1) Long id,
-        @Valid @RequestBody AnimalTypeUpdateSchema schema
+        @Valid @RequestBody AnimalChangeUpdateSchema schema
     ) throws NotFoundException, AlreadyExistException {
         return service.updateType(id, schema.getOldTypeId(), schema.getNewTypeId());
     }
