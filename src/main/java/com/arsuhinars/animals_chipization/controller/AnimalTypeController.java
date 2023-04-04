@@ -4,7 +4,9 @@ import com.arsuhinars.animals_chipization.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.AnimalType;
-import com.arsuhinars.animals_chipization.schema.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.schema.animal_type.AnimalTypeCreateSchema;
+import com.arsuhinars.animals_chipization.schema.animal_type.AnimalTypeSchema;
+import com.arsuhinars.animals_chipization.schema.animal_type.AnimalTypeUpdateSchema;
 import com.arsuhinars.animals_chipization.service.AnimalTypeService;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
@@ -40,7 +42,7 @@ public class AnimalTypeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AnimalTypeSchema createAnimalType(
-        @Valid @RequestBody AnimalTypeSchema animalType
+        @Valid @RequestBody AnimalTypeCreateSchema animalType
     ) throws AlreadyExistException {
         return service.create(animalType);
     }
@@ -48,7 +50,7 @@ public class AnimalTypeController {
     @PutMapping("/{id}")
     public AnimalTypeSchema updateAnimalTypeById(
         @PathVariable @Min(1) Long id,
-        @Valid @RequestBody AnimalTypeSchema animalType
+        @Valid @RequestBody AnimalTypeUpdateSchema animalType
     ) throws NotFoundException, AlreadyExistException {
         return service.update(id, animalType);
     }
