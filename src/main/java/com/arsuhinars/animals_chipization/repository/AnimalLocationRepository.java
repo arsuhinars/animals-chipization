@@ -13,11 +13,11 @@ import java.util.Optional;
 
 public interface AnimalLocationRepository extends CrudRepository<AnimalLocation, Long> {
     @Query("""
-        SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
+        SELECT loc FROM AnimalLocation loc JOIN loc.animal a
         WHERE
             a.id = ?1 AND
-            (CAST(?2 AS DATE) IS NULL OR CAST(?2 AS DATE) >= loc.visitedAt) AND
-            (CAST(?3 AS DATE) IS NULL OR CAST(?3 AS DATE) <= loc.visitedAt)
+            (CAST(?2 AS TIMESTAMP) IS NULL OR loc.visitedAt >= CAST(?2 AS TIMESTAMP)) AND
+            (CAST(?3 AS TIMESTAMP) IS NULL OR loc.visitedAt <= CAST(?3 AS TIMESTAMP))
         """)
     Page<AnimalLocation> search(
         Long animalId,
@@ -27,7 +27,7 @@ public interface AnimalLocationRepository extends CrudRepository<AnimalLocation,
     );
 
     @Query("""
-        SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
+        SELECT loc FROM AnimalLocation loc JOIN loc.animal a
         WHERE a.id = ?1
         ORDER BY loc.visitedAt ASC, loc.id ASC
         LIMIT 1
@@ -35,7 +35,7 @@ public interface AnimalLocationRepository extends CrudRepository<AnimalLocation,
     Optional<AnimalLocation> getAnimalFirstPoint(Long animalId);
 
     @Query("""
-        SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
+        SELECT loc FROM AnimalLocation loc JOIN loc.animal a
         WHERE a.id = ?1
         ORDER BY loc.visitedAt DESC, loc.id DESC
         LIMIT 1
@@ -43,7 +43,7 @@ public interface AnimalLocationRepository extends CrudRepository<AnimalLocation,
     Optional<AnimalLocation> getAnimalLastPoint(Long animalId);
 
     @Query("""
-        SELECT loc FROM AnimalVisitedLocation loc JOIN loc.animal a
+        SELECT loc FROM AnimalLocation loc JOIN loc.animal a
         WHERE a.id = ?1
         ORDER BY loc.visitedAt ASC, loc.id ASC
         """)
