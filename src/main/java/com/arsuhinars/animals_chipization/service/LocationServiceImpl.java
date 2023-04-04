@@ -6,9 +6,10 @@ import com.arsuhinars.animals_chipization.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.model.Animal;
 import com.arsuhinars.animals_chipization.model.Location;
 import com.arsuhinars.animals_chipization.repository.LocationRepository;
-import com.arsuhinars.animals_chipization.schema.LocationSchema;
+import com.arsuhinars.animals_chipization.schema.location.LocationCreateSchema;
+import com.arsuhinars.animals_chipization.schema.location.LocationSchema;
+import com.arsuhinars.animals_chipization.schema.location.LocationUpdateSchema;
 import com.arsuhinars.animals_chipization.util.ErrorDetailsFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationSchema create(LocationSchema schema) throws AlreadyExistException {
+    public LocationSchema create(LocationCreateSchema schema) throws AlreadyExistException {
         if (repository.existsByLatitudeAndLongitude(
                 schema.getLatitude(),
                 schema.getLongitude()
@@ -51,7 +52,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationSchema update(Long id, LocationSchema schema) throws NotFoundException, AlreadyExistException {
+    public LocationSchema update(Long id, LocationUpdateSchema schema) throws NotFoundException, AlreadyExistException {
         var location = repository.findById(id).orElse(null);
         if (location == null) {
             throw new NotFoundException(
