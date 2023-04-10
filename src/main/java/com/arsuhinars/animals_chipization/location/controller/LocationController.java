@@ -34,7 +34,7 @@ public class LocationController {
             );
         }
 
-        return location.get();
+        return location.map(LocationSchema::new).get();
     }
 
     @PostMapping
@@ -42,7 +42,7 @@ public class LocationController {
     public LocationSchema createLocation(
         @Valid @RequestBody LocationCreateSchema location
     ) throws AlreadyExistException {
-        return service.create(location);
+        return new LocationSchema(service.create(location));
     }
 
     @PutMapping("/{id}")
@@ -50,7 +50,7 @@ public class LocationController {
         @PathVariable @Min(1) Long id,
         @Valid @RequestBody LocationUpdateSchema location
     ) throws NotFoundException, AlreadyExistException {
-        return service.update(id, location);
+        return new LocationSchema(service.update(id, location));
     }
 
     @DeleteMapping("/{id}")
