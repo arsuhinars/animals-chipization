@@ -33,7 +33,7 @@ public class AreaController {
             throw new NotFoundException(ErrorDetailsFormatter.formatNotFoundError(Area.class, id));
         }
 
-        return area.get();
+        return area.map(AreaSchema::new).get();
     }
 
     @PostMapping
@@ -41,7 +41,7 @@ public class AreaController {
     public AreaSchema createArea(
         @Valid @RequestBody AreaCreateSchema schema
     ) throws AlreadyExistException {
-        return service.create(schema);
+        return new AreaSchema(service.create(schema));
     }
 
     @PutMapping("/{id}")
@@ -49,7 +49,7 @@ public class AreaController {
         @PathVariable @Min(1) Long id,
         @Valid @RequestBody AreaUpdateSchema schema
     ) throws NotFoundException, AlreadyExistException {
-        return service.update(id, schema);
+        return new AreaSchema(service.update(id, schema));
     }
 
     @DeleteMapping("/{id}")
