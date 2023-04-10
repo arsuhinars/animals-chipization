@@ -25,12 +25,12 @@ public class AnimalLocation {
     private Long id;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "animal_id", nullable = false)
     private Animal animal;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "visited_location_id", nullable = false)
     private Location visitedLocation;
 

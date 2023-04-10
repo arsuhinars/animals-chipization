@@ -38,7 +38,7 @@ public class AnimalController {
             );
         }
 
-        return animal.get();
+        return animal.map(AnimalSchema::new).get();
     }
 
     @GetMapping("/search")
@@ -61,7 +61,7 @@ public class AnimalController {
             gender,
             from,
             size
-        );
+        ).stream().map(AnimalSchema::new).toList();
     }
 
     @PostMapping
@@ -69,7 +69,7 @@ public class AnimalController {
     public AnimalSchema createAnimal(
         @Valid @RequestBody AnimalCreateSchema animal
     ) throws NotFoundException, AlreadyExistException {
-        return service.create(animal);
+        return new AnimalSchema(service.create(animal));
     }
 
     @PutMapping("/{id}")
@@ -77,7 +77,7 @@ public class AnimalController {
         @PathVariable @Min(1) Long id,
         @Valid @RequestBody AnimalUpdateSchema animal
     ) throws NotFoundException, IntegrityBreachException {
-        return service.update(id, animal);
+        return new AnimalSchema(service.update(id, animal));
     }
 
     @DeleteMapping("/{id}")
@@ -91,7 +91,7 @@ public class AnimalController {
         @PathVariable @Min(1) Long id,
         @PathVariable @Min(1) Long typeId
     ) throws NotFoundException, AlreadyExistException {
-        return service.addType(id, typeId);
+        return new AnimalSchema(service.addType(id, typeId));
     }
 
     @PutMapping("/{id}/types")
@@ -99,7 +99,9 @@ public class AnimalController {
         @PathVariable @Min(1) Long id,
         @Valid @RequestBody AnimalChangeUpdateSchema schema
     ) throws NotFoundException, AlreadyExistException {
-        return service.updateType(id, schema.getOldTypeId(), schema.getNewTypeId());
+        return new AnimalSchema(
+            service.updateType(id, schema.getOldTypeId(), schema.getNewTypeId())
+        );
     }
 
     @DeleteMapping("/{id}/types/{typeId}")
@@ -107,6 +109,6 @@ public class AnimalController {
         @PathVariable @Min(1) Long id,
         @PathVariable @Min(1) Long typeId
     ) throws NotFoundException, LastItemException {
-        return service.deleteType(id, typeId);
+        return new AnimalSchema(service.deleteType(id, typeId));
     }
 }

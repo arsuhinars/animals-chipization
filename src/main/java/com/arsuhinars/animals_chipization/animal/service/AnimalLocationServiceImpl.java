@@ -38,7 +38,7 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
     }
 
     @Override
-    public AnimalLocationSchema create(
+    public AnimalLocation create(
         Long animalId, Long pointId
     ) throws NotFoundException, IntegrityBreachException {
         var animal = animalRepository.findById(animalId).orElse(null);
@@ -81,11 +81,11 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
             animal, point, OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS)
         );
 
-        return new AnimalLocationSchema(repository.save(animalLocation));
+        return repository.save(animalLocation);
     }
 
     @Override
-    public List<AnimalLocationSchema> search(
+    public List<AnimalLocation> search(
         Long animalId,
         @Nullable OffsetDateTime start,
         @Nullable OffsetDateTime end,
@@ -97,17 +97,13 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
             );
         }
 
-        return
-            repository.search(
-                animalId, start, end, new OffsetPageable(size, from, Sort.by("visitedAt", "id").ascending())
-            )
-            .stream()
-            .map(AnimalLocationSchema::new)
-            .toList();
+        return repository.search(
+            animalId, start, end, new OffsetPageable(size, from, Sort.by("visitedAt", "id").ascending())
+        ).toList();
     }
 
     @Override
-    public AnimalLocationSchema update(
+    public AnimalLocation update(
         Long animalId, AnimalLocationUpdateSchema schema
     ) throws NotFoundException, IntegrityBreachException {
         var animal = animalRepository.findById(animalId).orElse(null);
@@ -172,7 +168,7 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
 
         animalLocation.setVisitedLocation(point);
 
-        return new AnimalLocationSchema(repository.save(animalLocation));
+        return repository.save(animalLocation);
     }
 
     @Override

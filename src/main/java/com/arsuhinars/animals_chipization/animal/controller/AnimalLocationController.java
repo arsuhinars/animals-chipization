@@ -32,7 +32,9 @@ public class AnimalLocationController {
         @RequestParam(defaultValue = "0") Integer from,
         @RequestParam(defaultValue = "10") Integer size
     ) throws NotFoundException {
-        return service.search(animalId, startDateTime, endDateTime, from, size);
+        return service.search(
+            animalId, startDateTime, endDateTime, from, size
+        ).stream().map(AnimalLocationSchema::new).toList();
     }
 
     @PostMapping("/{animalId}/locations/{pointId}")
@@ -41,7 +43,7 @@ public class AnimalLocationController {
         @PathVariable @Min(1) Long animalId,
         @PathVariable @Min(1) Long pointId
     ) throws NotFoundException, IntegrityBreachException {
-        return service.create(animalId, pointId);
+        return new AnimalLocationSchema(service.create(animalId, pointId));
     }
 
     @PutMapping("/{animalId}/locations")
@@ -49,7 +51,7 @@ public class AnimalLocationController {
         @PathVariable @Min(1) Long animalId,
         @Valid @RequestBody AnimalLocationUpdateSchema location
     ) throws NotFoundException, IntegrityBreachException {
-        return service.update(animalId, location);
+        return new AnimalLocationSchema(service.update(animalId, location));
     }
 
     @DeleteMapping("/{animalId}/locations/{visitedPointId}")

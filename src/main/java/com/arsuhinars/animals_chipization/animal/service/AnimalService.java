@@ -1,5 +1,6 @@
 package com.arsuhinars.animals_chipization.animal.service;
 
+import com.arsuhinars.animals_chipization.animal.model.Animal;
 import com.arsuhinars.animals_chipization.core.exception.*;
 import com.arsuhinars.animals_chipization.animal.enums.Gender;
 import com.arsuhinars.animals_chipization.animal.enums.LifeStatus;
@@ -13,11 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AnimalService {
-    AnimalSchema create(AnimalCreateSchema schema) throws NotFoundException, AlreadyExistException;
+    Animal create(AnimalCreateSchema schema) throws NotFoundException, AlreadyExistException;
 
-    Optional<AnimalSchema> getById(Long id);
+    Optional<Animal> getById(Long id);
 
-    List<AnimalSchema> search(
+    List<Animal> search(
         @Nullable OffsetDateTime start,
         @Nullable OffsetDateTime end,
         @Nullable Long chipperId,
@@ -27,13 +28,13 @@ public interface AnimalService {
         int from, int size
     );
 
-    AnimalSchema update(Long id, AnimalUpdateSchema schema) throws NotFoundException, IntegrityBreachException;
+    Animal update(Long id, AnimalUpdateSchema schema) throws NotFoundException, IntegrityBreachException;
 
     void delete(Long id) throws NotFoundException, DependsOnException;
 
-    AnimalSchema addType(Long animalId, Long typeId) throws NotFoundException, AlreadyExistException;
+    Animal addType(Long animalId, Long typeId) throws NotFoundException, AlreadyExistException;
 
-    AnimalSchema updateType(Long animalId, Long oldTypeId, Long newTypeId) throws NotFoundException, AlreadyExistException;
+    Animal updateType(Long animalId, Long oldTypeId, Long newTypeId) throws NotFoundException, AlreadyExistException;
 
-    AnimalSchema deleteType(Long animalId, Long typeId) throws NotFoundException, LastItemException;
+    Animal deleteType(Long animalId, Long typeId) throws NotFoundException, LastItemException;
 }

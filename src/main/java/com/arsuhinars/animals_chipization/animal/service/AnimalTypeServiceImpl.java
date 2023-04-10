@@ -23,7 +23,7 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
     }
 
     @Override
-    public AnimalTypeSchema create(AnimalTypeCreateSchema schema) throws AlreadyExistException {
+    public AnimalType create(AnimalTypeCreateSchema schema) throws AlreadyExistException {
         if (repository.existsByType(schema.getType())) {
             throw new AlreadyExistException(
                 ErrorDetailsFormatter.formatAlreadyExistsError(AnimalType.class, "type", schema.getType())
@@ -32,16 +32,16 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
 
         var animalType = new AnimalType(schema.getType());
 
-        return new AnimalTypeSchema(repository.save(animalType));
+        return repository.save(animalType);
     }
 
     @Override
-    public Optional<AnimalTypeSchema> getById(Long id) {
-        return repository.findById(id).map(AnimalTypeSchema::new);
+    public Optional<AnimalType> getById(Long id) {
+        return repository.findById(id);
     }
 
     @Override
-    public AnimalTypeSchema update(Long id, AnimalTypeUpdateSchema schema) throws NotFoundException, AlreadyExistException {
+    public AnimalType update(Long id, AnimalTypeUpdateSchema schema) throws NotFoundException, AlreadyExistException {
         var animalType = repository.findById(id).orElse(null);
         if (animalType == null) {
             throw new NotFoundException(
@@ -59,7 +59,7 @@ public class AnimalTypeServiceImpl implements AnimalTypeService {
 
         animalType.setType(schema.getType());
 
-        return new AnimalTypeSchema(repository.save(animalType));
+        return repository.save(animalType);
     }
 
     @Override

@@ -51,7 +51,7 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public AnimalSchema create(AnimalCreateSchema schema) throws NotFoundException, AlreadyExistException {
+    public Animal create(AnimalCreateSchema schema) throws NotFoundException, AlreadyExistException {
         var chipper = accountRepository.findById(schema.getChipperId()).orElse(null);
         if (chipper == null) {
             throw new NotFoundException(
@@ -90,16 +90,16 @@ public class AnimalServiceImpl implements AnimalService {
             Set.of()
         );
 
-        return new AnimalSchema(repository.save(animal));
+        return repository.save(animal);
     }
 
     @Override
-    public Optional<AnimalSchema> getById(Long id) {
-        return repository.findById(id).map(AnimalSchema::new);
+    public Optional<Animal> getById(Long id) {
+        return repository.findById(id);
     }
 
     @Override
-    public List<AnimalSchema> search(
+    public List<Animal> search(
         @Nullable OffsetDateTime start,
         @Nullable OffsetDateTime end,
         @Nullable Long chipperId,
@@ -108,16 +108,13 @@ public class AnimalServiceImpl implements AnimalService {
         @Nullable Gender gender,
         int from, int size
     ) {
-        return
-            repository.search(
-                start, end, chipperId, chippingLocationId, lifeStatus, gender, new OffsetPageable(size, from)
-            ).stream()
-            .map(AnimalSchema::new)
-            .toList();
+        return repository.search(
+            start, end, chipperId, chippingLocationId, lifeStatus, gender, new OffsetPageable(size, from)
+        ).toList();
     }
 
     @Override
-    public AnimalSchema update(Long id, AnimalUpdateSchema schema) throws NotFoundException, IntegrityBreachException {
+    public Animal update(Long id, AnimalUpdateSchema schema) throws NotFoundException, IntegrityBreachException {
         var animal = repository.findById(id).orElse(null);
         if (animal == null) {
             throw new NotFoundException(
@@ -170,7 +167,7 @@ public class AnimalServiceImpl implements AnimalService {
             animal.setDeathDateTime(OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         }
 
-        return new AnimalSchema(repository.save(animal));
+        return repository.save(animal);
     }
 
     @Override
@@ -194,7 +191,7 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public AnimalSchema addType(Long animalId, Long typeId) throws NotFoundException, AlreadyExistException {
+    public Animal addType(Long animalId, Long typeId) throws NotFoundException, AlreadyExistException {
         var animal = repository.findById(animalId).orElse(null);
         if (animal == null) {
             throw new NotFoundException(
@@ -217,11 +214,11 @@ public class AnimalServiceImpl implements AnimalService {
 
         animal.getTypes().add(animalType);
 
-        return new AnimalSchema(repository.save(animal));
+        return repository.save(animal);
     }
 
     @Override
-    public AnimalSchema updateType(
+    public Animal updateType(
         Long animalId, Long oldTypeId, Long newTypeId
     ) throws NotFoundException, AlreadyExistException {
         var animal = repository.findById(animalId).orElse(null);
@@ -260,11 +257,11 @@ public class AnimalServiceImpl implements AnimalService {
         animal.getTypes().remove(oldType);
         animal.getTypes().add(newType);
 
-        return new AnimalSchema(repository.save(animal));
+        return repository.save(animal);
     }
 
     @Override
-    public AnimalSchema deleteType(Long animalId, Long typeId) throws NotFoundException, LastItemException {
+    public Animal deleteType(Long animalId, Long typeId) throws NotFoundException, LastItemException {
         var animal = repository.findById(animalId).orElse(null);
         if (animal == null) {
             throw new NotFoundException(
@@ -293,6 +290,6 @@ public class AnimalServiceImpl implements AnimalService {
 
         animal.getTypes().remove(animalType);
 
-        return new AnimalSchema(repository.save(animal));
+        return repository.save(animal);
     }
 }

@@ -36,7 +36,7 @@ public class AnimalTypeController {
             );
         }
 
-        return animalType.get();
+        return animalType.map(AnimalTypeSchema::new).get();
     }
 
     @PostMapping
@@ -44,7 +44,7 @@ public class AnimalTypeController {
     public AnimalTypeSchema createAnimalType(
         @Valid @RequestBody AnimalTypeCreateSchema animalType
     ) throws AlreadyExistException {
-        return service.create(animalType);
+        return new AnimalTypeSchema(service.create(animalType));
     }
 
     @PutMapping("/{id}")
@@ -52,7 +52,7 @@ public class AnimalTypeController {
         @PathVariable @Min(1) Long id,
         @Valid @RequestBody AnimalTypeUpdateSchema animalType
     ) throws NotFoundException, AlreadyExistException {
-        return service.update(id, animalType);
+        return new AnimalTypeSchema(service.update(id, animalType));
     }
 
     @DeleteMapping("/{id}")
