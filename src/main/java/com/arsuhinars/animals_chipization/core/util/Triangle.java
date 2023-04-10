@@ -1,4 +1,4 @@
-package com.arsuhinars.animals_chipization.area.util;
+package com.arsuhinars.animals_chipization.core.util;
 
 import lombok.Getter;
 import lombok.ToString;
