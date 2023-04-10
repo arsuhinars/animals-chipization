@@ -24,9 +24,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
             );
         }
 
-        return new AccountDetails(
-            new AccountSchema(account),
-            account.getHashedPassword()
-        );
+        return new AccountDetails(account);
     }
 }
