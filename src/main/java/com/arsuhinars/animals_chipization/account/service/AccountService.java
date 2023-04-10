@@ -1,5 +1,6 @@
 package com.arsuhinars.animals_chipization.account.service;
 
+import com.arsuhinars.animals_chipization.account.model.Account;
 import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.core.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
@@ -12,20 +13,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
-    AccountSchema create(AccountCreateSchema schema) throws AlreadyExistException;
+    Account create(AccountCreateSchema schema) throws AlreadyExistException;
 
-    Optional<AccountSchema> getById(Long id);
+    Optional<Account> getById(Long id);
 
-    Optional<AccountSchema> getByEmail(String email);
+    Optional<Account> getByEmail(String email);
 
-    List<AccountSchema> search(
+    List<Account> search(
         @Nullable String firstName,
         @Nullable String lastName,
         @Nullable String email,
         int from, int count
     );
 
-    AccountSchema update(Long id, AccountUpdateSchema schema) throws NotFoundException, AlreadyExistException;
+    Account update(Long id, AccountUpdateSchema schema) throws NotFoundException, AlreadyExistException;
 
     void delete(Long id) throws NotFoundException, DependsOnException;
 }

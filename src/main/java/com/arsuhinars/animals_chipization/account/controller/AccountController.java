@@ -46,7 +46,7 @@ public class AccountController {
             );
         }
 
-        return schema.get();
+        return schema.map(AccountSchema::new).get();
     }
 
     @GetMapping("/search")
@@ -57,7 +57,7 @@ public class AccountController {
         @RequestParam(defaultValue = "0") @Min(0) Integer from,
         @RequestParam(defaultValue = "10") @Min(1) Integer size
     ) {
-        return service.search(firstName, lastName, email, from, size);
+        return service.search(firstName, lastName, email, from, size).stream().map(AccountSchema::new).toList();
     }
 
     @PostMapping
@@ -65,7 +65,7 @@ public class AccountController {
     public AccountSchema createAccount(
         @Valid @RequestBody AccountCreateSchema schema
     ) throws AlreadyExistException {
-        return service.create(schema);
+        return new AccountSchema(service.create(schema));
     }
 
     @PutMapping("/{id}")
@@ -78,7 +78,7 @@ public class AccountController {
             throw new ForbiddenException();
         }
 
-        return service.update(id, schema);
+        return new AccountSchema(service.update(id, schema));
     }
 
     @DeleteMapping("/{id}")

@@ -28,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountSchema create(AccountCreateSchema schema) throws AlreadyExistException {
+    public Account create(AccountCreateSchema schema) throws AlreadyExistException {
         if (repository.existsByEmail(schema.getEmail())) {
             throw new AlreadyExistException(
                 ErrorDetailsFormatter.formatAlreadyExistsError(Account.class, "email", schema.getEmail())
@@ -43,35 +43,31 @@ public class AccountServiceImpl implements AccountService {
             schema.getRole()
         );
 
-        return new AccountSchema(repository.save(account));
+        return repository.save(account);
     }
 
     @Override
-    public Optional<AccountSchema> getById(Long id) {
-        return repository.findById(id).map(AccountSchema::new);
+    public Optional<Account> getById(Long id) {
+        return repository.findById(id);
     }
 
     @Override
-    public Optional<AccountSchema> getByEmail(String email) {
-        return repository.findByEmail(email).map(AccountSchema::new);
+    public Optional<Account> getByEmail(String email) {
+        return repository.findByEmail(email);
     }
 
     @Override
-    public List<AccountSchema> search(
+    public List<Account> search(
         @Nullable String firstName,
         @Nullable String lastName,
         @Nullable String email,
         int from, int count
     ) {
-        return
-            repository.search(firstName, lastName, email, count, from)
-            .stream()
-            .map(AccountSchema::new)
-            .toList();
+        return repository.search(firstName, lastName, email, count, from);
     }
 
     @Override
-    public AccountSchema update(Long id, AccountUpdateSchema schema) throws NotFoundException, AlreadyExistException {
+    public Account update(Long id, AccountUpdateSchema schema) throws NotFoundException, AlreadyExistException {
         var account = repository.findById(id).orElse(null);
         if (account == null) {
             throw new NotFoundException(
@@ -95,7 +91,7 @@ public class AccountServiceImpl implements AccountService {
         );
         account.setRole(schema.getRole());
 
-        return new AccountSchema(repository.save(account));
+        return repository.save(account);
     }
 
     @Override

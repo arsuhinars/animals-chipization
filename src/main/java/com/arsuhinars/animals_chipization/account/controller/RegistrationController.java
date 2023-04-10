@@ -21,8 +21,10 @@ public class RegistrationController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AccountSchema registerAccount(
-        @Valid @RequestBody RegistrationSchema account
+        @Valid @RequestBody RegistrationSchema schema
     ) throws AlreadyExistException {
-        return service.create(new AccountCreateSchema(account));
+        return new AccountSchema(
+            service.create(new AccountCreateSchema(schema))
+        );
     }
 }
