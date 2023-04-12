@@ -3,7 +3,6 @@ package com.arsuhinars.animals_chipization.animal.service;
 import com.arsuhinars.animals_chipization.animal.model.AnimalLocation;
 import com.arsuhinars.animals_chipization.core.exception.IntegrityBreachException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
-import com.arsuhinars.animals_chipization.animal.schema.animal_location.AnimalLocationSchema;
 import com.arsuhinars.animals_chipization.animal.schema.animal_location.AnimalLocationUpdateSchema;
 import jakarta.annotation.Nullable;
 

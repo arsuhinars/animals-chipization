@@ -1,7 +1,6 @@
 package com.arsuhinars.animals_chipization.core.security;
 
 import com.arsuhinars.animals_chipization.account.model.Account;
-import com.arsuhinars.animals_chipization.account.schema.AccountSchema;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

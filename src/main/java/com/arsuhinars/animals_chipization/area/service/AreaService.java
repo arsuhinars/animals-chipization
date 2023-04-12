@@ -3,7 +3,6 @@ package com.arsuhinars.animals_chipization.area.service;
 import com.arsuhinars.animals_chipization.area.model.Area;
 import com.arsuhinars.animals_chipization.area.schema.AreaAnalyticsSchema;
 import com.arsuhinars.animals_chipization.area.schema.AreaCreateSchema;
-import com.arsuhinars.animals_chipization.area.schema.AreaSchema;
 import com.arsuhinars.animals_chipization.area.schema.AreaUpdateSchema;
 import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.core.exception.InvalidFormatException;

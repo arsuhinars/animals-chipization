@@ -8,8 +8,6 @@ import com.arsuhinars.animals_chipization.animal.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.location.model.Location;
 import com.arsuhinars.animals_chipization.animal.repository.AnimalRepository;
 import com.arsuhinars.animals_chipization.animal.repository.AnimalLocationRepository;
-import com.arsuhinars.animals_chipization.location.repository.LocationRepository;
-import com.arsuhinars.animals_chipization.animal.schema.animal_location.AnimalLocationSchema;
 import com.arsuhinars.animals_chipization.animal.schema.animal_location.AnimalLocationUpdateSchema;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import com.arsuhinars.animals_chipization.core.util.OffsetPageable;

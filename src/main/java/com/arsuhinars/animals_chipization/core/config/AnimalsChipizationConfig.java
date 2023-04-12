@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 @Configuration
 public class AnimalsChipizationConfig {

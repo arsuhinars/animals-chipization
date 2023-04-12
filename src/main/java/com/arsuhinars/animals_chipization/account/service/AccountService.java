@@ -5,7 +5,6 @@ import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.core.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.account.schema.AccountCreateSchema;
-import com.arsuhinars.animals_chipization.account.schema.AccountSchema;
 import com.arsuhinars.animals_chipization.account.schema.AccountUpdateSchema;
 import jakarta.annotation.Nullable;
 

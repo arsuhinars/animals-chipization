@@ -5,7 +5,6 @@ import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.core.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.animal.schema.animal_type.AnimalTypeCreateSchema;
-import com.arsuhinars.animals_chipization.animal.schema.animal_type.AnimalTypeSchema;
 import com.arsuhinars.animals_chipization.animal.schema.animal_type.AnimalTypeUpdateSchema;
 
 import java.util.Optional;

@@ -5,7 +5,6 @@ import com.arsuhinars.animals_chipization.core.exception.*;
 import com.arsuhinars.animals_chipization.animal.enums.Gender;
 import com.arsuhinars.animals_chipization.animal.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.animal.schema.animal.AnimalCreateSchema;
-import com.arsuhinars.animals_chipization.animal.schema.animal.AnimalSchema;
 import com.arsuhinars.animals_chipization.animal.schema.animal.AnimalUpdateSchema;
 import jakarta.annotation.Nullable;
 

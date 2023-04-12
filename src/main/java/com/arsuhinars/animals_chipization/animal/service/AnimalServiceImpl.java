@@ -14,7 +14,6 @@ import com.arsuhinars.animals_chipization.animal.enums.LifeStatus;
 import com.arsuhinars.animals_chipization.location.model.Location;
 import com.arsuhinars.animals_chipization.location.repository.LocationRepository;
 import com.arsuhinars.animals_chipization.animal.schema.animal.AnimalCreateSchema;
-import com.arsuhinars.animals_chipization.animal.schema.animal.AnimalSchema;
 import com.arsuhinars.animals_chipization.animal.schema.animal.AnimalUpdateSchema;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import com.arsuhinars.animals_chipization.core.util.OffsetPageable;

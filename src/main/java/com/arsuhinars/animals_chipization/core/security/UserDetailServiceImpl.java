@@ -2,7 +2,6 @@ package com.arsuhinars.animals_chipization.core.security;
 
 import com.arsuhinars.animals_chipization.account.model.Account;
 import com.arsuhinars.animals_chipization.account.repository.AccountRepository;
-import com.arsuhinars.animals_chipization.account.schema.AccountSchema;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -7,7 +7,6 @@ import com.arsuhinars.animals_chipization.account.model.Account;
 import com.arsuhinars.animals_chipization.animal.model.Animal;
 import com.arsuhinars.animals_chipization.account.repository.AccountRepository;
 import com.arsuhinars.animals_chipization.account.schema.AccountCreateSchema;
-import com.arsuhinars.animals_chipization.account.schema.AccountSchema;
 import com.arsuhinars.animals_chipization.account.schema.AccountUpdateSchema;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import jakarta.annotation.Nullable;

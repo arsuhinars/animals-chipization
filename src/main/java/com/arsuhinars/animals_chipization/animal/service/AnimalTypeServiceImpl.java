@@ -7,7 +7,6 @@ import com.arsuhinars.animals_chipization.animal.model.Animal;
 import com.arsuhinars.animals_chipization.animal.model.AnimalType;
 import com.arsuhinars.animals_chipization.animal.repository.AnimalTypeRepository;
 import com.arsuhinars.animals_chipization.animal.schema.animal_type.AnimalTypeCreateSchema;
-import com.arsuhinars.animals_chipization.animal.schema.animal_type.AnimalTypeSchema;
 import com.arsuhinars.animals_chipization.animal.schema.animal_type.AnimalTypeUpdateSchema;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import org.springframework.stereotype.Service;
