@@ -1,15 +1,18 @@
 package com.arsuhinars.animals_chipization.location.service;
 
+import com.arsuhinars.animals_chipization.area.service.AreaService;
 import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.core.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.animal.model.Animal;
+import com.arsuhinars.animals_chipization.core.util.GeoPosition;
+import com.arsuhinars.animals_chipization.core.util.Rect;
 import com.arsuhinars.animals_chipization.location.model.Location;
 import com.arsuhinars.animals_chipization.location.repository.LocationRepository;
 import com.arsuhinars.animals_chipization.location.schema.LocationCreateSchema;
-import com.arsuhinars.animals_chipization.location.schema.LocationSchema;
 import com.arsuhinars.animals_chipization.location.schema.LocationUpdateSchema;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +21,21 @@ import java.util.Optional;
 @Service
 public class LocationServiceImpl implements LocationService {
     private final LocationRepository repository;
+    private AreaService areaService;
 
-    public LocationServiceImpl(LocationRepository repository) {
+    public LocationServiceImpl(
+        LocationRepository repository
+    ) {
         this.repository = repository;
     }
 
+    @Autowired
+    public void setAreaService(AreaService areaService) {
+        this.areaService = areaService;
+    }
+
     @Override
-    public LocationSchema create(LocationCreateSchema schema) throws AlreadyExistException {
+    public Location create(LocationCreateSchema schema) throws AlreadyExistException {
         if (repository.existsByLatitudeAndLongitude(
                 schema.getLatitude(),
                 schema.getLongitude()
@@ -40,19 +51,26 @@ public class LocationServiceImpl implements LocationService {
         }
 
         var location = new Location(
-            schema.getLatitude(), schema.getLongitude()
+            new GeoPosition(schema.getLatitude(), schema.getLongitude())
         );
 
-        return new LocationSchema(repository.save(location));
+        areaService.getInPoint(location.getPosition()).ifPresent(location::setArea);
+
+        return repository.save(location);
     }
 
     @Override
-    public Optional<LocationSchema> getById(Long id) {
-        return repository.findById(id).map(LocationSchema::new);
+    public Optional<Location> getById(Long id) {
+        return repository.findById(id);
     }
 
     @Override
-    public LocationSchema update(Long id, LocationUpdateSchema schema) throws NotFoundException, AlreadyExistException {
+    public List<Location> getInRange(Rect range) {
+        return repository.findInRange(range.getMinX(), range.getMinY(), range.getMaxX(), range.getMaxY());
+    }
+
+    @Override
+    public Location update(Long id, LocationUpdateSchema schema) throws NotFoundException, AlreadyExistException {
         var location = repository.findById(id).orElse(null);
         if (location == null) {
             throw new NotFoundException(
@@ -72,10 +90,13 @@ public class LocationServiceImpl implements LocationService {
             );
         }
 
-        location.setLatitude(schema.getLatitude());
-        location.setLongitude(schema.getLongitude());
+        location.setPosition(
+            new GeoPosition(schema.getLatitude(), schema.getLongitude())
+        );
 
-        return new LocationSchema(repository.save(location));
+        areaService.getInPoint(location.getPosition()).ifPresent(location::setArea);
+
+        return repository.save(location);
     }
 
     @Override
