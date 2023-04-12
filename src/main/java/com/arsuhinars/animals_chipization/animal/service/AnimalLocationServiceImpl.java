@@ -11,6 +11,7 @@ import com.arsuhinars.animals_chipization.animal.repository.AnimalLocationReposi
 import com.arsuhinars.animals_chipization.animal.schema.animal_location.AnimalLocationUpdateSchema;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import com.arsuhinars.animals_chipization.core.util.OffsetPageable;
+import com.arsuhinars.animals_chipization.location.service.LocationService;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -23,16 +24,16 @@ import java.util.List;
 public class AnimalLocationServiceImpl implements AnimalLocationService {
     private final AnimalLocationRepository repository;
     private final AnimalRepository animalRepository;
-    private final LocationRepository locationRepository;
+    private final LocationService locationService;
 
     public AnimalLocationServiceImpl(
         AnimalLocationRepository animalLocationRepository,
         AnimalRepository animalRepository,
-        LocationRepository locationRepository
+        LocationService locationService
     ) {
         this.repository = animalLocationRepository;
         this.animalRepository = animalRepository;
-        this.locationRepository = locationRepository;
+        this.locationService = locationService;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
             );
         }
 
-        var point = locationRepository.findById(pointId).orElse(null);
+        var point = locationService.getById(pointId).orElse(null);
         if (point == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(Location.class, pointId)
@@ -129,7 +130,7 @@ public class AnimalLocationServiceImpl implements AnimalLocationService {
             );
         }
 
-        var point = locationRepository.findById(schema.getLocationPointId()).orElse(null);
+        var point = locationService.getById(schema.getLocationPointId()).orElse(null);
         if (point == null) {
             throw new NotFoundException(
                 ErrorDetailsFormatter.formatNotFoundError(
