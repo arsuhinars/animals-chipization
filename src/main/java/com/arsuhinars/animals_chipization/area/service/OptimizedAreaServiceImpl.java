@@ -1,11 +1,11 @@
 package com.arsuhinars.animals_chipization.area.service;
 
 import com.arsuhinars.animals_chipization.area.model.Area;
-import com.arsuhinars.animals_chipization.area.model.AreaPoint;
 import com.arsuhinars.animals_chipization.area.repository.AreaRepository;
 import com.arsuhinars.animals_chipization.area.util.OptimizedArea;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
+import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class OptimizedAreaServiceImpl implements OptimizedAreaService {
                 );
             }
             var optimizedArea = areaFactory.createArea(
-                area.getPoints().stream().map(AreaPoint::toVector2d).toList()
+                area.getPoints().stream().map(GeoPosition::toVector2d).toList()
             );
             areasMap.put(id, optimizedArea);
         }

@@ -1,6 +1,7 @@
 package com.arsuhinars.animals_chipization.area.schema;
 
 import com.arsuhinars.animals_chipization.area.model.Area;
+import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,11 +24,11 @@ public class AreaSchema {
 
     @NotNull
     @Size(min = 3)
-    private List<AreaPointSchema> areaPoints;
+    private List<GeoPosition> areaPoints;
 
     public AreaSchema(Area area) {
         this.id = area.getId();
         this.name = area.getName();
-        this.areaPoints = area.getPoints().stream().map(AreaPointSchema::new).toList();
+        this.areaPoints = area.getPoints();
     }
 }

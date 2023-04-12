@@ -31,7 +31,7 @@ public class LocationSchema {
 
     public LocationSchema(Location location) {
         this.id = location.getId();
-        this.latitude = location.getLatitude();
-        this.longitude = location.getLongitude();
+        this.latitude = location.getPosition().getLatitude();
+        this.longitude = location.getPosition().getLongitude();
     }
 }

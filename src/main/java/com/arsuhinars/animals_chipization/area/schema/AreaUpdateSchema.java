@@ -1,5 +1,6 @@
 package com.arsuhinars.animals_chipization.area.schema;
 
+import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,5 +21,5 @@ public class AreaUpdateSchema {
 
     @NotNull
     @Size(min = 3)
-    private List<AreaPointSchema> areaPoints;
+    private List<GeoPosition> areaPoints;
 }

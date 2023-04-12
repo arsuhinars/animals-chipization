@@ -2,6 +2,8 @@ package com.arsuhinars.animals_chipization.location.model;
 
 import com.arsuhinars.animals_chipization.animal.model.Animal;
 import com.arsuhinars.animals_chipization.animal.model.AnimalLocation;
+import com.arsuhinars.animals_chipization.area.model.Area;
+import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +11,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "locations", indexes = {
-    @Index(columnList = "latitude, latitude", unique = true)
+    @Index(columnList = "latitude, longitude", unique = true),
+    @Index(columnList = "latitude"),
+    @Index(columnList = "longitude")
 })
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -26,11 +30,15 @@ public class Location {
 
     @NonNull
     @Column(nullable = false)
-    private Double latitude;
+    @AttributeOverrides({
+        @AttributeOverride(name = "latitude",  column = @Column(name = "latitude")),
+        @AttributeOverride(name = "longitude", column = @Column(name = "longitude"))
+    })
+    private GeoPosition position;
 
-    @NonNull
-    @Column(nullable = false)
-    private Double longitude;
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "area_id")
+    private Area area;
 
     @OneToMany(mappedBy = "chippingLocation")
     @ToString.Exclude
