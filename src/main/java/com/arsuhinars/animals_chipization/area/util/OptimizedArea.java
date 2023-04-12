@@ -1,7 +1,10 @@
 package com.arsuhinars.animals_chipization.area.util;
 
+import com.arsuhinars.animals_chipization.core.util.MathUtil;
+import com.arsuhinars.animals_chipization.core.util.Rect;
+import com.arsuhinars.animals_chipization.core.util.Triangle;
+import com.arsuhinars.animals_chipization.core.util.Vector2d;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.List;
@@ -32,7 +35,7 @@ public class OptimizedArea {
             return true;
         }
 
-        if (this.points.size() != area.points.size() || Double.compare(squareArea, area.squareArea) != 0) {
+        if (this.points.size() != area.points.size() || !MathUtil.fuzzyEquals(squareArea, area.squareArea)) {
             return false;
         }
 
