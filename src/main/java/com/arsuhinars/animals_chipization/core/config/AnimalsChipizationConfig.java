@@ -24,9 +24,7 @@ public class AnimalsChipizationConfig {
                     OffsetDateTime offsetDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider
                 ) throws IOException {
                     jsonGenerator.writeString(
-                        DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
-                            offsetDateTime.truncatedTo(ChronoUnit.SECONDS)
-                        )
+                        offsetDateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
                     );
                 }
             })
