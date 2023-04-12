@@ -3,6 +3,7 @@ package com.arsuhinars.animals_chipization.animal.repository;
 import com.arsuhinars.animals_chipization.animal.model.Animal;
 import com.arsuhinars.animals_chipization.animal.enums.Gender;
 import com.arsuhinars.animals_chipization.animal.enums.LifeStatus;
+import com.arsuhinars.animals_chipization.area.model.Area;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface AnimalRepository extends CrudRepository<Animal, Long> {
@@ -37,5 +39,27 @@ public interface AnimalRepository extends CrudRepository<Animal, Long> {
         @Nullable LifeStatus lifeStatus,
         @Nullable Gender gender,
         Pageable pageable
+    );
+
+    @Query("""
+        SELECT a.animal FROM AnimalLocation a JOIN a.visitedLocation loc
+        WHERE
+            loc.area = ?1 AND
+            (CAST(?2 AS TIMESTAMP) IS NULL OR a.visitedAt >= CAST(?2 AS TIMESTAMP)) AND
+            (CAST(?3 AS TIMESTAMP) IS NULL OR a.visitedAt <= CAST(?3 AS TIMESTAMP))
+        """)
+    List<Animal> findVisitedArea(
+        Area area, @Nullable OffsetDateTime start, @Nullable OffsetDateTime end
+    );
+
+    @Query("""
+        SELECT a FROM Animal a JOIN a.chippingLocation loc
+        WHERE
+            loc.area = ?1 AND
+            (CAST(?2 AS TIMESTAMP) IS NULL OR a.chippingDateTime >= CAST(?2 AS TIMESTAMP)) AND
+            (CAST(?3 AS TIMESTAMP) IS NULL OR a.chippingDateTime <= CAST(?3 AS TIMESTAMP))
+        """)
+    List<Animal> findChippedInArea(
+        Area area, @Nullable OffsetDateTime start, @Nullable OffsetDateTime end
     );
 }
