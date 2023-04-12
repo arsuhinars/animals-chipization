@@ -11,7 +11,6 @@
         </option>
         <option name="services">
           <list>
-            <option value="tests" />
             <option value="backend" />
           </list>
         </option>
