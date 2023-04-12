@@ -11,6 +11,7 @@ import java.time.OffsetDateTime;
     @Index(columnList = "visitedAt")
 })
 @NoArgsConstructor
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 @Setter
