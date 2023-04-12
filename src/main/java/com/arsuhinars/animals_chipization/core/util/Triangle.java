@@ -25,32 +25,36 @@ public class Triangle {
     public double area() {
         return Math.abs(Vector2d.cross(
             points[1].subtract(points[0]), points[2].subtract(points[0])
-        ));
+        )) / 2.0;
     }
 
     public boolean containsPoint(Vector2d point) {
+        return containsPoint(point, true);
+    }
+
+    public boolean containsPoint(Vector2d point, boolean takeBorders) {
         var s1 = Math.abs(Vector2d.cross(
             points[0].subtract(point), points[1].subtract(point)
         ));
-        if (MathUtil.fuzzyEquals(s1, 0.0)) {
+        if (!takeBorders && MathUtil.fuzzyEquals(s1, 0.0)) {
             return false;
         }
 
         var s2 = Math.abs(Vector2d.cross(
            points[1].subtract(point), points[2].subtract(point)
         ));
-        if (MathUtil.fuzzyEquals(s2, 0.0)) {
+        if (!takeBorders && MathUtil.fuzzyEquals(s2, 0.0)) {
             return false;
         }
 
         var s3 = Math.abs(Vector2d.cross(
             points[2].subtract(point), points[0].subtract(point)
         ));
-        if (MathUtil.fuzzyEquals(s3, 0.0)) {
+        if (!takeBorders && MathUtil.fuzzyEquals(s3, 0.0)) {
             return false;
         }
 
-        return MathUtil.fuzzyEquals(s1 + s2 + s3, area());
+        return MathUtil.fuzzyEquals(s1 + s2 + s3, area() * 2.0);
     }
 
     public boolean overlapsTriangle(Triangle triangle) {
@@ -58,16 +62,16 @@ public class Triangle {
             return false;
         }
 
-        if (containsPoint(triangle.points[0]) ||
-            containsPoint(triangle.points[1]) ||
-            containsPoint(triangle.points[2])
+        if (containsPoint(triangle.points[0], false) ||
+            containsPoint(triangle.points[1], false) ||
+            containsPoint(triangle.points[2], false)
         ) {
             return true;
         }
 
-        if (triangle.containsPoint(points[0]) ||
-            triangle.containsPoint(points[1]) ||
-            triangle.containsPoint(points[2])
+        if (triangle.containsPoint(points[0], false) ||
+            triangle.containsPoint(points[1], false) ||
+            triangle.containsPoint(points[2], false)
         ) {
             return true;
         }
