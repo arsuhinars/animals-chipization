@@ -3,6 +3,7 @@ package com.arsuhinars.animals_chipization.location.controller;
 import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.core.exception.DependsOnException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
+import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 import com.arsuhinars.animals_chipization.location.model.Location;
 import com.arsuhinars.animals_chipization.location.schema.LocationCreateSchema;
 import com.arsuhinars.animals_chipization.location.schema.LocationSchema;
@@ -35,6 +36,11 @@ public class LocationController {
         }
 
         return location.map(LocationSchema::new).get();
+    }
+
+    @GetMapping
+    public Long getLocationId(@Valid GeoPosition position) throws NotFoundException {
+        return service.getId(position);
     }
 
     @PostMapping
