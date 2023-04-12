@@ -2,6 +2,10 @@ package com.arsuhinars.animals_chipization.area.service;
 
 import com.arsuhinars.animals_chipization.area.util.*;
 import com.arsuhinars.animals_chipization.core.exception.InvalidFormatException;
+import com.arsuhinars.animals_chipization.core.util.MathUtil;
+import com.arsuhinars.animals_chipization.core.util.Rect;
+import com.arsuhinars.animals_chipization.core.util.Triangle;
+import com.arsuhinars.animals_chipization.core.util.Vector2d;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashSet;
@@ -28,6 +32,7 @@ public class OptimizedAreaFactory {
                 prev.subtract(first), curr.subtract(first)
             );
         }
+        area /= 2;
 
         if (MathUtil.fuzzyEquals(area, 0.0)) {
             throw new InvalidFormatException("Area can't be a line");
@@ -107,7 +112,6 @@ public class OptimizedAreaFactory {
                 }
             }
         }
-/**/
         return false;
     }
 }
