@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LocationRepository extends CrudRepository<Location, Long> {
     @Query("""
@@ -12,7 +13,13 @@ public interface LocationRepository extends CrudRepository<Location, Long> {
             CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
         FROM Location loc WHERE loc.position.latitude = ?1 AND loc.position.longitude = ?2
         """)
-    boolean existsByLatitudeAndLongitude(Double latitude, Double longitude);
+    boolean existsByPosition(Double latitude, Double longitude);
+
+    @Query("""
+        SELECT loc FROM Location loc WHERE
+            loc.position.latitude = ?1 AND loc.position.longitude = ?2
+        """)
+    Optional<Location> findByPosition(Double latitude, Double longitude);
 
     @Query("""
         SELECT loc FROM Location loc WHERE
