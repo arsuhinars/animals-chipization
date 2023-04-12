@@ -36,23 +36,17 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Location create(LocationCreateSchema schema) throws AlreadyExistException {
-        if (repository.existsByLatitudeAndLongitude(
-                schema.getLatitude(),
-                schema.getLongitude()
-            )
-        ) {
+        var geoPos = new GeoPosition(schema.getLatitude(), schema.getLongitude());
+
+        if (repository.existsByPosition(geoPos.getLatitude(), geoPos.getLongitude())) {
             throw new AlreadyExistException(
                 ErrorDetailsFormatter.formatAlreadyExistsError(
-                    Location.class,
-                    "[latitude, longitude]",
-                    List.of(schema.getLatitude(), schema.getLongitude())
+                    Location.class, "position", geoPos
                 )
             );
         }
 
-        var location = new Location(
-            new GeoPosition(schema.getLatitude(), schema.getLongitude())
-        );
+        var location = new Location(geoPos);
 
         areaService.getInPoint(location.getPosition()).ifPresent(location::setArea);
 
@@ -62,6 +56,21 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public Optional<Location> getById(Long id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public Long getId(GeoPosition position) throws NotFoundException {
+        var location = repository.findByPosition(
+            position.getLatitude(), position.getLongitude()
+        ).orElse(null);
+
+        if (location == null) {
+            throw new NotFoundException(
+                ErrorDetailsFormatter.formatNotFoundError(Location.class, "position", position)
+            );
+        }
+
+        return location.getId();
     }
 
     @Override
@@ -78,21 +87,17 @@ public class LocationServiceImpl implements LocationService {
             );
         }
 
-        if (repository.existsByLatitudeAndLongitude(
-            schema.getLatitude(), schema.getLongitude())
-        ) {
+        var geoPos = new GeoPosition(schema.getLatitude(), schema.getLongitude());
+
+        if (repository.existsByPosition(geoPos.getLatitude(), geoPos.getLongitude())) {
             throw new AlreadyExistException(
                 ErrorDetailsFormatter.formatAlreadyExistsError(
-                    Location.class,
-                    "[latitude, longitude]",
-                    List.of(schema.getLatitude(), schema.getLongitude())
+                    Location.class, "position", geoPos
                 )
             );
         }
 
-        location.setPosition(
-            new GeoPosition(schema.getLatitude(), schema.getLongitude())
-        );
+        location.setPosition(geoPos);
 
         areaService.getInPoint(location.getPosition()).ifPresent(location::setArea);
 
