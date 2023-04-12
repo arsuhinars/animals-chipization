@@ -65,19 +65,19 @@ public class Animal {
     private OffsetDateTime chippingDateTime;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "chipper_id", nullable = false)
     private Account chipper;
 
     @NonNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "chipping_location_id", nullable = false)
     private Location chippingLocation;
 
     @NonNull
     @OneToMany(
         mappedBy = "animal",
-        fetch = FetchType.LAZY,
+        fetch = FetchType.EAGER,
         cascade = { CascadeType.MERGE, CascadeType.PERSIST },
         orphanRemoval = true
     )
