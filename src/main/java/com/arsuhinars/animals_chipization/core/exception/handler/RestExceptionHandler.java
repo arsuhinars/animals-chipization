@@ -2,6 +2,7 @@ package com.arsuhinars.animals_chipization.core.exception.handler;
 
 import com.arsuhinars.animals_chipization.core.exception.AppException;
 import jakarta.validation.ValidationException;
+import lombok.NonNull;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -26,7 +27,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
-        Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request
+        Exception ex,
+        @Nullable Object body,
+        @NonNull HttpHeaders headers,
+        @NonNull HttpStatusCode statusCode,
+        @NonNull WebRequest request
     ) {
         var details = ex.getMessage();
 
