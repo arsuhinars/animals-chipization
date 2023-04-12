@@ -1,18 +1,23 @@
 package com.arsuhinars.animals_chipization.area.controller;
 
 import com.arsuhinars.animals_chipization.area.model.Area;
+import com.arsuhinars.animals_chipization.area.schema.AreaAnalyticsSchema;
 import com.arsuhinars.animals_chipization.area.schema.AreaCreateSchema;
 import com.arsuhinars.animals_chipization.area.schema.AreaSchema;
 import com.arsuhinars.animals_chipization.area.schema.AreaUpdateSchema;
 import com.arsuhinars.animals_chipization.area.service.AreaService;
 import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
+import com.arsuhinars.animals_chipization.core.exception.InvalidFormatException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.*;
 
 @RestController
 @RequestMapping("/areas")
@@ -36,6 +41,23 @@ public class AreaController {
         return area.map(AreaSchema::new).get();
     }
 
+    @GetMapping("/{id}/analytics")
+    public AreaAnalyticsSchema getAnalytics(
+        @PathVariable @Min(1) Long id,
+        @RequestParam @NotNull LocalDate startDate,
+        @RequestParam @NotNull LocalDate endDate
+    ) throws NotFoundException, InvalidFormatException {
+        if (startDate.isEqual(endDate) || startDate.isAfter(endDate)) {
+            throw new InvalidFormatException("startDate must be before endDate");
+        }
+
+        return service.getAnalytics(
+            id,
+            OffsetDateTime.of(startDate, LocalTime.MIDNIGHT, ZoneOffset.UTC),
+            OffsetDateTime.of(endDate, LocalTime.MIDNIGHT, ZoneOffset.UTC)
+        );
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AreaSchema createArea(
@@ -45,7 +67,7 @@ public class AreaController {
     }
 
     @PutMapping("/{id}")
-    public AreaSchema updateSchemaById(
+    public AreaSchema updateAreaById(
         @PathVariable @Min(1) Long id,
         @Valid @RequestBody AreaUpdateSchema schema
     ) throws NotFoundException, AlreadyExistException {
@@ -53,7 +75,7 @@ public class AreaController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSchemaById(
+    public void deleteAreaById(
         @PathVariable @Min(1) Long id
     ) throws NotFoundException {
         service.delete(id);
