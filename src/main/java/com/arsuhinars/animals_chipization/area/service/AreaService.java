@@ -9,7 +9,7 @@ import com.arsuhinars.animals_chipization.core.exception.InvalidFormatException;
 import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface AreaService {
@@ -19,7 +19,7 @@ public interface AreaService {
 
     Optional<Area> getInPoint(GeoPosition point);
 
-    AreaAnalyticsSchema getAnalytics(Long areaId, OffsetDateTime start, OffsetDateTime end) throws NotFoundException;
+    AreaAnalyticsSchema getAnalytics(Long areaId, LocalDate start, LocalDate end) throws NotFoundException;
 
     Area update(
         Long id, AreaUpdateSchema schema

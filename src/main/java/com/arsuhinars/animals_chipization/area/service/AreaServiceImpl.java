@@ -16,7 +16,10 @@ import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 import com.arsuhinars.animals_chipization.location.repository.LocationRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -96,7 +99,7 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public AreaAnalyticsSchema getAnalytics(
-        Long areaId, OffsetDateTime start, OffsetDateTime end
+        Long areaId, LocalDate start, LocalDate end
     ) throws NotFoundException {
         var area = repository.findById(areaId).orElse(null);
         if (area == null) {
@@ -105,9 +108,12 @@ public class AreaServiceImpl implements AreaService {
             );
         }
 
+        var startAsDateTime = OffsetDateTime.of(start, LocalTime.MIN, ZoneOffset.UTC);
+        var endAsDateTime = OffsetDateTime.of(end, LocalTime.MAX, ZoneOffset.UTC);
+
         var animals = new HashSet<Animal>();
-        animals.addAll(animalRepository.findVisitedArea(area, start, end));
-        animals.addAll(animalRepository.findChippedInArea(area, start, end));
+        animals.addAll(animalRepository.findVisitedArea(area, startAsDateTime, endAsDateTime));
+        animals.addAll(animalRepository.findChippedInArea(area, startAsDateTime, endAsDateTime));
 
         var locationsComparator = Comparator.comparing(
             AnimalLocation::getVisitedAt, OffsetDateTime::compareTo
@@ -130,11 +136,10 @@ public class AreaServiceImpl implements AreaService {
 
             var didArrive = false;
             var didGone = false;
-            var didGoneInEnd = false;
             for (int i = 0; i < locations.size() - 1; ++i) {
-                var currDate = locations.get(i).getVisitedAt();
+                var currDate = locations.get(i).getVisitedAt().toLocalDate();
                 var currArea = locations.get(i).getVisitedLocation().getArea();
-                var nextDate = locations.get(i + 1).getVisitedAt();
+                var nextDate = locations.get(i + 1).getVisitedAt().toLocalDate();
                 var nextArea = locations.get(i + 1).getVisitedLocation().getArea();
 
                 if (!didArrive &&
@@ -143,7 +148,6 @@ public class AreaServiceImpl implements AreaService {
                     area.equals(nextArea)
                 ) {
                     didArrive = true;
-                    didGoneInEnd = false;
                 }
 
                 if ((currDate.isEqual(end) || currDate.isBefore(end)) &&
@@ -151,11 +155,10 @@ public class AreaServiceImpl implements AreaService {
                     !area.equals(nextArea)
                 ) {
                     didGone = true;
-                    didGoneInEnd = nextDate.isBefore(end) || nextDate.isEqual(end);
                 }
             }
 
-            if (!didGoneInEnd) {
+            if (!didArrive && !didGone) {
                 analytics.increaseQuantity();
                 animal.getTypes().forEach(type -> animalsAnalytics.get(type).increaseQuantity());
             }

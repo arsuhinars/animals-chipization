@@ -51,11 +51,7 @@ public class AreaController {
             throw new InvalidFormatException("startDate must be before endDate");
         }
 
-        return service.getAnalytics(
-            id,
-            OffsetDateTime.of(startDate, LocalTime.MIDNIGHT, ZoneOffset.UTC),
-            OffsetDateTime.of(endDate, LocalTime.MIDNIGHT, ZoneOffset.UTC)
-        );
+        return service.getAnalytics(id, startDate, endDate);
     }
 
     @PostMapping
