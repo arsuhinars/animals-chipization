@@ -150,7 +150,8 @@ public class AreaServiceImpl implements AreaService {
                     didArrive = true;
                 }
 
-                if ((currDate.isEqual(end) || currDate.isBefore(end)) &&
+                if (!didGone &&
+                    currDate.isBefore(end) &&
                     area.equals(currArea) &&
                     !area.equals(nextArea)
                 ) {
@@ -158,7 +159,7 @@ public class AreaServiceImpl implements AreaService {
                 }
             }
 
-            if (!didArrive && !didGone) {
+            if (!didGone) {
                 analytics.increaseQuantity();
                 animal.getTypes().forEach(type -> animalsAnalytics.get(type).increaseQuantity());
             }
