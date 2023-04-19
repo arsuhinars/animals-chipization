@@ -13,6 +13,8 @@ public class Triangle {
 
     private final Rect rect;
 
+    private final double area;
+
     public Triangle(List<Vector2d> points) {
         if (points == null || points.size() != 3) {
             throw new IllegalArgumentException("Points must contain only 3 elements");
@@ -20,41 +22,38 @@ public class Triangle {
 
         this.points = points.toArray(Vector2d[]::new);
         this.rect = Rect.inPointsRange(points);
+        this.area = Math.abs(Vector2d.cross(
+            this.points[1].subtract(this.points[0]),
+            this.points[2].subtract(this.points[0])
+        )) / 2.0;
     }
 
-    public double area() {
-        return Math.abs(Vector2d.cross(
-            points[1].subtract(points[0]), points[2].subtract(points[0])
-        )) / 2.0;
+    public double getArea() {
+        return area;
     }
 
     public boolean containsPoint(Vector2d point) {
         return containsPoint(point, true);
     }
 
-    public boolean containsPoint(Vector2d point, boolean takeBorders) {
+    public boolean containsPoint(Vector2d point, boolean withBorders) {
         var s1 = Math.abs(Vector2d.cross(
             points[0].subtract(point), points[1].subtract(point)
         ));
-        if (!takeBorders && MathUtil.fuzzyEquals(s1, 0.0)) {
-            return false;
-        }
-
         var s2 = Math.abs(Vector2d.cross(
            points[1].subtract(point), points[2].subtract(point)
         ));
-        if (!takeBorders && MathUtil.fuzzyEquals(s2, 0.0)) {
-            return false;
-        }
-
         var s3 = Math.abs(Vector2d.cross(
             points[2].subtract(point), points[0].subtract(point)
         ));
-        if (!takeBorders && MathUtil.fuzzyEquals(s3, 0.0)) {
+
+        if (!withBorders && (
+            MathUtil.fuzzyEquals(s1, 0.0) || MathUtil.fuzzyEquals(s2, 0.0) || MathUtil.fuzzyEquals(s3, 0.0)
+        )) {
             return false;
         }
 
-        return MathUtil.fuzzyEquals(s1 + s2 + s3, area() * 2.0);
+        return MathUtil.fuzzyEquals(s1 + s2 + s3, this.area * 2.0);
     }
 
     public boolean overlapsTriangle(Triangle triangle) {
