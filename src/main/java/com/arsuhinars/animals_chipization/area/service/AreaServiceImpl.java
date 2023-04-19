@@ -84,17 +84,18 @@ public class AreaServiceImpl implements AreaService {
     }
 
     @Override
-    public Optional<Area> getInPoint(GeoPosition point) {
+    public List<Area> getInPoint(GeoPosition point) {
         var areas = repository.findInPointRange(point.getLatitude(), point.getLongitude());
+        var result = new LinkedList<Area>();
 
         for (var area : areas) {
             var optimizedArea = optimizedAreaService.getById(area.getId());
             if (optimizedArea.containsPoint(point.toVector2d())) {
-                return Optional.of(area);
+                result.add(area);
             }
         }
 
-        return Optional.empty();
+        return result;
     }
 
     @Override
@@ -138,22 +139,22 @@ public class AreaServiceImpl implements AreaService {
             var didGone = false;
             for (int i = 0; i < locations.size() - 1; ++i) {
                 var currDate = locations.get(i).getVisitedAt().toLocalDate();
-                var currArea = locations.get(i).getVisitedLocation().getArea();
+                var currAreas = locations.get(i).getVisitedLocation().getAreas();
                 var nextDate = locations.get(i + 1).getVisitedAt().toLocalDate();
-                var nextArea = locations.get(i + 1).getVisitedLocation().getArea();
+                var nextAreas = locations.get(i + 1).getVisitedLocation().getAreas();
 
                 if (!didArrive &&
                     nextDate.isAfter(start) &&
-                    !area.equals(currArea) &&
-                    area.equals(nextArea)
+                    !currAreas.contains(area) &&
+                    nextAreas.contains(area)
                 ) {
                     didArrive = true;
                 }
 
                 if (!didGone &&
                     currDate.isBefore(end) &&
-                    area.equals(currArea) &&
-                    !area.equals(nextArea)
+                    currAreas.contains(area) &&
+                    !nextAreas.contains(area)
                 ) {
                     didGone = true;
                 }
@@ -232,7 +233,7 @@ public class AreaServiceImpl implements AreaService {
         }
 
         for (var location : area.getLocations()) {
-            location.setArea(null);
+            location.getAreas().remove(area);
         }
         locationRepository.saveAll(area.getLocations());
 
@@ -248,7 +249,7 @@ public class AreaServiceImpl implements AreaService {
         );
         for (var loc : locations) {
             if (optimizedArea.containsPoint(loc.getPosition().toVector2d())) {
-                loc.setArea(area);
+                loc.getAreas().add(area);
                 locationRepository.save(loc);
             }
         }

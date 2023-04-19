@@ -36,9 +36,14 @@ public class Location {
     })
     private GeoPosition position;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "area_id")
-    private Area area;
+    @NonNull
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+        name = "locations_areas",
+        joinColumns = @JoinColumn(name = "location_id"),
+        inverseJoinColumns = @JoinColumn(name = "area_id")
+    )
+    private Set<Area> areas;
 
     @OneToMany(mappedBy = "chippingLocation")
     @ToString.Exclude

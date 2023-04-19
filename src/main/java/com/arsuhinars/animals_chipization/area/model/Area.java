@@ -43,6 +43,6 @@ public class Area {
     @Column(nullable = false)
     private Rect rect;
 
-    @OneToMany(mappedBy = "area")
+    @ManyToMany(mappedBy = "areas")
     private Set<Location> locations;
 }

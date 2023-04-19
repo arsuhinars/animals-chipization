@@ -42,9 +42,9 @@ public interface AnimalRepository extends CrudRepository<Animal, Long> {
     );
 
     @Query("""
-        SELECT a.animal FROM AnimalLocation a JOIN a.visitedLocation loc
+        SELECT a.animal FROM AnimalLocation a JOIN a.visitedLocation loc JOIN loc.areas area
         WHERE
-            loc.area = ?1 AND
+            area = ?1 AND
             (CAST(?2 AS TIMESTAMP) IS NULL OR a.visitedAt >= CAST(?2 AS TIMESTAMP)) AND
             (CAST(?3 AS TIMESTAMP) IS NULL OR a.visitedAt <= CAST(?3 AS TIMESTAMP))
         """)
@@ -53,9 +53,9 @@ public interface AnimalRepository extends CrudRepository<Animal, Long> {
     );
 
     @Query("""
-        SELECT a FROM Animal a JOIN a.chippingLocation loc
+        SELECT a FROM Animal a JOIN a.chippingLocation loc JOIN loc.areas area
         WHERE
-            loc.area = ?1 AND
+            area = ?1 AND
             (CAST(?2 AS TIMESTAMP) IS NULL OR a.chippingDateTime >= CAST(?2 AS TIMESTAMP)) AND
             (CAST(?3 AS TIMESTAMP) IS NULL OR a.chippingDateTime <= CAST(?3 AS TIMESTAMP))
         """)

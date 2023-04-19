@@ -10,6 +10,7 @@ import com.arsuhinars.animals_chipization.core.exception.NotFoundException;
 import com.arsuhinars.animals_chipization.core.util.GeoPosition;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface AreaService {
@@ -17,7 +18,7 @@ public interface AreaService {
 
     Optional<Area> getById(Long id);
 
-    Optional<Area> getInPoint(GeoPosition point);
+    List<Area> getInPoint(GeoPosition point);
 
     AreaAnalyticsSchema getAnalytics(Long areaId, LocalDate start, LocalDate end) throws NotFoundException;
 

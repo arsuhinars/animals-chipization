@@ -1,5 +1,6 @@
 package com.arsuhinars.animals_chipization.location.service;
 
+import com.arsuhinars.animals_chipization.area.model.Area;
 import com.arsuhinars.animals_chipization.area.service.AreaService;
 import com.arsuhinars.animals_chipization.core.exception.AlreadyExistException;
 import com.arsuhinars.animals_chipization.core.exception.DependsOnException;
@@ -15,6 +16,7 @@ import com.arsuhinars.animals_chipization.core.util.ErrorDetailsFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,9 +48,9 @@ public class LocationServiceImpl implements LocationService {
             );
         }
 
-        var location = new Location(geoPos);
+        var location = new Location(geoPos, new HashSet<>());
 
-        areaService.getInPoint(location.getPosition()).ifPresent(location::setArea);
+        areaService.getInPoint(location.getPosition()).forEach(location.getAreas()::add);
 
         return repository.save(location);
     }
@@ -99,7 +101,7 @@ public class LocationServiceImpl implements LocationService {
 
         location.setPosition(geoPos);
 
-        areaService.getInPoint(location.getPosition()).ifPresent(location::setArea);
+        areaService.getInPoint(location.getPosition()).forEach(location.getAreas()::add);
 
         return repository.save(location);
     }
